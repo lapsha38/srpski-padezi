@@ -133,7 +133,8 @@ jobs:
   pages:
     name: Publish web version to GitHub Pages
     needs: check
-    if: github.event_name == 'release'
+    # Deploys from main: the site always matches the latest commit.
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     permissions:
       pages: write
