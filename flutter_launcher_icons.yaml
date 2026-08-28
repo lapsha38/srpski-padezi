@@ -1,0 +1,25 @@
+# Иконки приложения генерируются из assets/icon командой
+# dart run flutter_launcher_icons
+flutter_launcher_icons:
+  # iOS и веб: скруглённый квадрат, портрет крупнее.
+  image_path: "assets/icon/app_icon.png"
+  # Android обрезает иконку по круглой маске, поэтому здесь больше полей.
+  image_path_android: "assets/icon/app_icon_android.png"
+
+  android: true
+  # Адаптивная иконка Android обрезается по маске, поэтому портрет берётся
+  # с полями, а фон - белый, как на исходном изображении.
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "assets/icon/app_icon_foreground.png"
+  # Поля уже заложены в сам файл: отступ из XML некоторые оболочки
+  # (MIUI, HyperOS и другие) игнорируют, и портрет тогда режется по краям.
+  adaptive_icon_foreground_inset: 0
+
+  ios: true
+  # iOS не допускает прозрачности в иконке.
+  remove_alpha_ios: true
+
+  web:
+    generate: true
+    background_color: "#FFFFFF"
+    theme_color: "#FFFFFF"
