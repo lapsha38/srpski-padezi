@@ -37,7 +37,13 @@ jobs:
       - name: Tests
         run: |
           mkdir -p test-results
-          flutter test --machine > test-results/flutter.json
+          flutter test --machine > test-results/raw.log
+
+      # `flutter test --machine` prints pub output and a couple of non-object
+      # lines around the JSON stream, so the report keeps only JSON objects.
+      - name: Prepare test report
+        if: always()
+        run: grep '^{' test-results/raw.log > test-results/flutter.json
 
       # Publishes a check run with the list of tests. `flutter-json` is the
       # native format of `flutter test --machine`, so no converter is needed.
