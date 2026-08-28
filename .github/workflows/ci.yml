@@ -1,0 +1,137 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    # Changes to docs alone do not need a build.
+    paths-ignore:
+      - '**/*.md'
+      - '.gitignore'
+      - 'LICENSE'
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  checks: write
+
+jobs:
+  check:
+    name: Format, analyze and test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+
+      - name: Check formatting
+        run: dart format --output=none --set-exit-if-changed lib test
+
+      - name: Static analysis
+        run: flutter analyze
+
+      - name: Tests
+        run: |
+          mkdir -p test-results
+          flutter test --machine > test-results/flutter.json
+
+      # Publishes a check run with the list of tests. `flutter-json` is the
+      # native format of `flutter test --machine`, so no converter is needed.
+      - name: Publish test results
+        uses: dorny/test-reporter@v3
+        if: always()
+        with:
+          name: Test Results
+          path: test-results/flutter.json
+          reporter: flutter-json
+          fail-on-error: true
+          only-summary: false
+
+  android:
+    name: Android APK
+    needs: check
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      # The release build is signed with the debug key: that is enough to
+      # install the APK on a phone, but not to publish it on Google Play.
+      - name: Build APK
+        run: flutter build apk --release
+      - uses: actions/upload-artifact@v7
+        with:
+          name: srpski-padezi-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
+
+      # On a published release the APK is attached to it, so it can be
+      # downloaded straight to a phone.
+      - name: Attach APK to the release
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v3
+        with:
+          files: build/app/outputs/flutter-apk/app-release.apk
+
+  web:
+    name: Web build
+    needs: check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      # The resulting directory can be hosted anywhere and installed on an
+      # iPhone through "Add to Home Screen".
+      - name: Build web version
+        run: flutter build web --release
+      - uses: actions/upload-artifact@v7
+        with:
+          name: srpski-padezi-web
+          path: build/web
+          if-no-files-found: error
+
+  pages:
+    name: Publish web version to GitHub Pages
+    needs: check
+    if: github.event_name == 'release'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      # Pages serves the site from a subdirectory, so the base href has to
+      # match the repository name.
+      - name: Build web version
+        run: flutter build web --release --base-href /srpski-padezi/
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: build/web
+      - id: deployment
+        uses: actions/deploy-pages@v5
