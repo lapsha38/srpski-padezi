@@ -1,6 +1,7 @@
 # Srpski Padeži
 
 [![CI](https://github.com/lapsha38/srpski-padezi/actions/workflows/ci.yml/badge.svg)](https://github.com/lapsha38/srpski-padezi/actions/workflows/ci.yml)
+[![Tests](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/lapsha38/b73e42de86c6313704549a8466474690/raw/srpski-padezi-tests.json)](https://github.com/lapsha38/srpski-padezi/actions/workflows/ci.yml)
 
 Тренажёр сербской грамматики с объяснениями на русском языке. Сербские слова -
 на латинице, интерфейс полностью русский. Android получает APK, iPhone -
@@ -124,9 +125,10 @@ flutter test
 `.github/workflows/ci.yml` запускается на push в `main`, на пулл-реквесты
 и вручную кнопкой «Run workflow». Четыре задачи:
 
-- **check** - форматирование, анализ и тесты; результаты тестов
-  публикуются отдельной проверкой «Test Results» со списком всех кейсов;
-  остальные задачи ждут её;
+- **check** - форматирование, анализ и тесты; результаты публикуются
+  проверкой «Test Results» со списком всех кейсов, а их количество попадает
+  в бейдж через gist (нужны секрет `GIST_SECRET` с правом gist и переменная
+  `BADGE_GIST_ID`); остальные задачи ждут её;
 - **android** - `flutter build apk --release`, готовый APK лежит в
   артефактах сборки (подписан отладочным ключом: поставить на телефон
   можно, публиковать в Google Play - нет);

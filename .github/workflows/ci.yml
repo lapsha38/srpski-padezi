@@ -19,6 +19,8 @@ jobs:
   check:
     name: Format, analyze and test
     runs-on: ubuntu-latest
+    env:
+      GIST_SECRET: ${{ secrets.GIST_SECRET }}
     steps:
       - uses: actions/checkout@v7
       - uses: subosito/flutter-action@v2
@@ -48,6 +50,7 @@ jobs:
       # Publishes a check run with the list of tests. `flutter-json` is the
       # native format of `flutter test --machine`, so no converter is needed.
       - name: Publish test results
+        id: test-count
         uses: dorny/test-reporter@v3
         if: always()
         with:
@@ -56,6 +59,20 @@ jobs:
           reporter: flutter-json
           fail-on-error: true
           only-summary: false
+
+      # The badge in README reads this gist. Counts of failed and skipped
+      # tests are appended only when they are not zero, so a clean run shows
+      # just "42 passed".
+      - name: Update test badge
+        if: always() && github.event_name == 'push' && env.GIST_SECRET != ''
+        uses: schneegans/dynamic-badges-action@v1.9.0
+        with:
+          auth: ${{ secrets.GIST_SECRET }}
+          gistID: ${{ vars.BADGE_GIST_ID }}
+          filename: srpski-padezi-tests.json
+          label: tests
+          message: "${{ steps.test-count.outputs.passed || '0' }} passed${{ steps.test-count.outputs.failed != '0' && steps.test-count.outputs.failed != '' && format(' · {0} failed', steps.test-count.outputs.failed) || '' }}${{ steps.test-count.outputs.skipped != '0' && steps.test-count.outputs.skipped != '' && format(' · {0} skipped', steps.test-count.outputs.skipped) || '' }}"
+          color: ${{ steps.test-count.outputs.conclusion == 'success' && 'brightgreen' || 'red' }}
 
   android:
     name: Android APK
