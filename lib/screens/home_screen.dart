@@ -11,6 +11,7 @@ import 'package:srpski_padezi/screens/numerals_screen.dart';
 import 'package:srpski_padezi/screens/phrase_table_screen.dart';
 import 'package:srpski_padezi/screens/quiz_screen.dart';
 import 'package:srpski_padezi/services/progress_service.dart';
+import 'package:srpski_padezi/services/theme_service.dart';
 import 'package:srpski_padezi/theme.dart';
 
 /// Главный экран: путь обучения по семи падежам.
@@ -25,6 +26,7 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Srpski Padeži'),
         actions: [
+          const _ThemeButton(),
           IconButton(
             tooltip: 'Сбросить прогресс',
             icon: const Icon(Icons.restart_alt),
@@ -518,6 +520,26 @@ class _PhraseTableCard extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Кнопка переключения светлой и тёмной темы.
+class _ThemeButton extends StatelessWidget {
+  const _ThemeButton();
+
+  @override
+  Widget build(BuildContext context) {
+    // Яркость берётся у темы, а не у выбранного режима: пока режим
+    // системный, кнопка должна предлагать то, чего сейчас нет на экране.
+    final dark = Theme.of(context).brightness == Brightness.dark;
+
+    return IconButton(
+      tooltip: dark ? 'Светлая тема' : 'Тёмная тема',
+      icon: Icon(dark ? Icons.light_mode_outlined : Icons.dark_mode_outlined),
+      onPressed: () => ThemeService.instance.toggle(
+        Theme.of(context).brightness,
       ),
     );
   }

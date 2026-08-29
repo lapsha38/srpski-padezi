@@ -8,6 +8,7 @@ import 'package:srpski_padezi/main.dart';
 import 'package:srpski_padezi/models/models.dart';
 import 'package:srpski_padezi/screens/phrase_table_screen.dart';
 import 'package:srpski_padezi/services/progress_service.dart';
+import 'package:srpski_padezi/services/theme_service.dart';
 import 'package:srpski_padezi/widgets/selectable_on_web.dart';
 import 'package:srpski_padezi/widgets/tag_chip.dart';
 
@@ -16,6 +17,7 @@ void main() {
     setUp(() async {
       SharedPreferences.setMockInitialValues({});
       await ProgressService.instance.reset();
+      await ThemeService.instance.setMode(ThemeMode.system);
     });
 
     testWidgets('на главном экране есть падежи и раздел числительных', (
@@ -260,6 +262,49 @@ void main() {
         ),
       );
       expect(find.byType(SelectionArea), findsNothing);
+    });
+
+    testWidgets('кнопка в шапке переключает светлую и тёмную тему', (
+      tester,
+    ) async {
+      await tester.pumpWidget(const SrpskiPadeziApp());
+      await tester.pumpAndSettle();
+
+      Brightness brightness() => Theme.of(
+        tester.element(find.text('Srpski Padeži')),
+      ).brightness;
+
+      expect(brightness(), Brightness.light);
+      expect(find.byIcon(Icons.dark_mode_outlined), findsOneWidget);
+
+      await tester.tap(find.byIcon(Icons.dark_mode_outlined));
+      await tester.pumpAndSettle();
+
+      expect(brightness(), Brightness.dark);
+      expect(ThemeService.instance.mode, ThemeMode.dark);
+      expect(find.byIcon(Icons.light_mode_outlined), findsOneWidget);
+
+      await tester.tap(find.byIcon(Icons.light_mode_outlined));
+      await tester.pumpAndSettle();
+
+      expect(brightness(), Brightness.light);
+      expect(ThemeService.instance.mode, ThemeMode.light);
+    });
+
+    testWidgets('выбранная тема переживает перезапуск', (tester) async {
+      await ThemeService.instance.setMode(ThemeMode.dark);
+      await ThemeService.instance.setMode(ThemeMode.system);
+      // Выбор лежит в хранилище, поэтому после загрузки он возвращается.
+      SharedPreferences.setMockInitialValues({'srpski_padezi_theme': 'dark'});
+      await ThemeService.instance.load();
+
+      await tester.pumpWidget(const SrpskiPadeziApp());
+      await tester.pumpAndSettle();
+
+      expect(
+        Theme.of(tester.element(find.text('Srpski Padeži'))).brightness,
+        Brightness.dark,
+      );
     });
   });
 }

@@ -198,7 +198,11 @@ class _CaseRow extends StatelessWidget {
     final theme = Theme.of(context);
     final answered = given != null;
     final correct = given == row.answer;
-    final markColor = correct ? Colors.green.shade700 : theme.colorScheme.error;
+    // В тёмной теме тёмно-зелёный на тёмном фоне почти не читается.
+    final dark = theme.brightness == Brightness.dark;
+    final markColor = correct
+        ? (dark ? Colors.green.shade400 : Colors.green.shade700)
+        : theme.colorScheme.error;
 
     return InkWell(
       onTap: answered ? null : onTap,
