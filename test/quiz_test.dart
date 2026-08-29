@@ -247,6 +247,51 @@ void main() {
     });
   });
 
+  group('Порядок тренировок урока', () {
+    test('единственное число ведёт к множественному, затем к смешанному', () {
+      final singular = QuizPresets.forCase(
+        GramCase.genitiv,
+        NumberMode.singular,
+      );
+      expect(singular.next?.label, 'множественное число');
+
+      final plural = singular.next!.build();
+      expect(plural.title, contains('множественное'));
+      expect(plural.gramCase, GramCase.genitiv);
+      expect(plural.next?.label, 'оба числа вперемешку');
+
+      final mixed = plural.next!.build();
+      expect(mixed.title, contains('оба числа'));
+      expect(mixed.next, isNull, reason: 'цепочка кончается смешанным');
+    });
+
+    test('цепочка сохраняет падеж и вид тренировки', () {
+      for (final c in GramCase.values) {
+        var session = QuizPresets.forCase(c, NumberMode.singular);
+        var steps = 1;
+        while (session.next != null) {
+          session = session.next!.build();
+          steps++;
+          expect(session.gramCase, c);
+          expect(session.progressKey, 'case_${c.index}');
+          expect(session.build(), hasLength(12));
+        }
+        expect(steps, 3, reason: c.sr);
+      }
+    });
+
+    test('у тренировки словосочетаний продолжения нет', () {
+      final phrases = QuizPresets.forCase(
+        GramCase.dativ,
+        NumberMode.mixed,
+        practice: PracticeMode.phrases,
+      );
+      expect(phrases.next, isNull);
+      expect(QuizPresets.mixed(GramCase.values).next, isNull);
+      expect(QuizPresets.phrases(GramCase.values).next, isNull);
+    });
+  });
+
   group('Таблица склонения', () {
     test('в таблице семь падежей с корректными вариантами', () {
       for (var seed = 0; seed < 200; seed++) {

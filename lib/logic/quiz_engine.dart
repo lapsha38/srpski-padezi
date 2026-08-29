@@ -33,6 +33,7 @@ class QuizSession {
     required this.build,
     this.progressKey,
     this.gramCase,
+    this.next,
   });
 
   final String title;
@@ -43,6 +44,20 @@ class QuizSession {
 
   /// Падеж урока, если тренировка относится к одному падежу.
   final GramCase? gramCase;
+
+  /// Что предложить после этой тренировки; null - если урок на ней кончается.
+  final NextStep? next;
+}
+
+/// Следующий шаг урока: подпись кнопки и сама тренировка.
+///
+/// Тренировка задаётся функцией, а не готовым объектом: иначе цепочка
+/// строила бы сразу все свои продолжения.
+class NextStep {
+  const NextStep({required this.label, required this.build});
+
+  final String label;
+  final QuizSession Function() build;
 }
 
 /// Что тренируем: отдельное существительное или словосочетание
@@ -433,18 +448,38 @@ class QuizGenerator {
 /// Готовые тренировки по падежам.
 class QuizPresets {
   /// Тренировка по одному падежу.
+  ///
+  /// Тренировки урока идут цепочкой: единственное число - множественное -
+  /// оба вперемешку. Разбор результата предлагает следующее звено, поэтому
+  /// возвращаться к списку тренировок вручную не нужно.
   static QuizSession forCase(
     GramCase c,
     NumberMode mode, {
     PracticeMode practice = PracticeMode.nouns,
-  }) => QuizSession(
-    title: '${c.sr} - ${mode.ru}',
-    gramCase: c,
-    progressKey: 'case_${c.index}',
-    build: () => QuizGenerator().generate(
-      QuizConfig(cases: [c], numberMode: mode, practiceMode: practice),
-    ),
-  );
+  }) {
+    final nextMode = switch (mode) {
+      NumberMode.singular => NumberMode.plural,
+      NumberMode.plural => NumberMode.mixed,
+      NumberMode.mixed => null,
+    };
+
+    return QuizSession(
+      title: '${c.sr} - ${mode.ru}',
+      gramCase: c,
+      progressKey: 'case_${c.index}',
+      build: () => QuizGenerator().generate(
+        QuizConfig(cases: [c], numberMode: mode, practiceMode: practice),
+      ),
+      next: nextMode == null
+          ? null
+          : NextStep(
+              label: nextMode == NumberMode.plural
+                  ? 'множественное число'
+                  : 'оба числа вперемешку',
+              build: () => forCase(c, nextMode, practice: practice),
+            ),
+    );
+  }
 
   /// Тренировка словосочетаний «прилагательное + существительное».
   static QuizSession phrases(List<GramCase> cases, {int count = 12}) =>

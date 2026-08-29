@@ -26,6 +26,7 @@ class ResultScreen extends StatelessWidget {
         gramCase != null && gramCase.index + 1 < GramCase.values.length
         ? GramCase.values[gramCase.index + 1]
         : null;
+    final nextStep = session.next;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Результат')),
@@ -61,16 +62,35 @@ class ResultScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            FilledButton(
-              onPressed: () => Navigator.pushReplacement(
-                context,
-                MaterialPageRoute<void>(
-                  builder: (_) => QuizScreen(session: session),
-                ),
+            // Пока порог не взят, разумнее повторить ту же тренировку,
+            // поэтому главной кнопкой «Дальше» становится только после
+            // прохождения.
+            if (nextStep != null && _passed) ...[
+              FilledButton(
+                onPressed: () => _startNext(context, nextStep),
+                child: Text('Дальше: ${nextStep.label}'),
               ),
-              child: const Text('Пройти ещё раз'),
-            ),
-            if (nextCase != null) ...[
+              const SizedBox(height: 8),
+              FilledButton.tonal(
+                onPressed: () => _repeat(context, session),
+                child: const Text('Пройти ещё раз'),
+              ),
+            ] else ...[
+              FilledButton(
+                onPressed: () => _repeat(context, session),
+                child: const Text('Пройти ещё раз'),
+              ),
+              if (nextStep != null) ...[
+                const SizedBox(height: 8),
+                FilledButton.tonal(
+                  onPressed: () => _startNext(context, nextStep),
+                  child: Text('Дальше: ${nextStep.label}'),
+                ),
+              ],
+            ],
+            // Следующий падеж предлагается в конце цепочки: пока у урока
+            // есть продолжение, уходить из него рано.
+            if (nextCase != null && nextStep == null) ...[
               const SizedBox(height: 8),
               FilledButton.tonal(
                 onPressed: () {
@@ -123,6 +143,22 @@ class ResultScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Запускает ту же тренировку заново - с новым набором вопросов.
+void _repeat(BuildContext context, QuizSession session) {
+  Navigator.pushReplacement(
+    context,
+    MaterialPageRoute<void>(builder: (_) => QuizScreen(session: session)),
+  );
+}
+
+/// Переходит к следующей тренировке урока.
+void _startNext(BuildContext context, NextStep step) {
+  Navigator.pushReplacement(
+    context,
+    MaterialPageRoute<void>(builder: (_) => QuizScreen(session: step.build())),
+  );
 }
 
 class _MistakeCard extends StatelessWidget {

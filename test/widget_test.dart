@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:srpski_padezi/logic/phrase_table.dart';
+import 'package:srpski_padezi/logic/quiz_engine.dart';
 import 'package:srpski_padezi/main.dart';
 import 'package:srpski_padezi/models/models.dart';
 import 'package:srpski_padezi/screens/phrase_table_screen.dart';
+import 'package:srpski_padezi/screens/result_screen.dart';
 import 'package:srpski_padezi/services/progress_service.dart';
 import 'package:srpski_padezi/services/theme_service.dart';
 import 'package:srpski_padezi/widgets/selectable_on_web.dart';
@@ -337,6 +339,86 @@ void main() {
         Theme.of(tester.element(find.text('Srpski Padeži'))).brightness,
         Brightness.dark,
       );
+    });
+
+    /// Разбор тренировки, где все ответы верны.
+    Future<void> pumpResult(WidgetTester tester, QuizSession session) async {
+      final answers = [
+        for (final q in session.build())
+          AnswerRecord(question: q, given: q.answer, correct: true),
+      ];
+      await tester.pumpWidget(
+        MaterialApp(
+          home: ResultScreen(answers: answers, session: session),
+        ),
+      );
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('после единственного числа предлагается множественное', (
+      tester,
+    ) async {
+      await pumpResult(
+        tester,
+        QuizPresets.forCase(GramCase.nominativ, NumberMode.singular),
+      );
+
+      expect(find.text('Дальше: множественное число'), findsOneWidget);
+      // Пока у урока есть продолжение, следующий падеж не предлагается.
+      expect(find.textContaining('Следующий падеж'), findsNothing);
+
+      await tester.tap(find.text('Дальше: множественное число'));
+      await tester.pumpAndSettle();
+      expect(find.text('Nominativ - множественное число'), findsOneWidget);
+      expect(find.textContaining('Вопрос 1 из'), findsOneWidget);
+    });
+
+    testWidgets('при слабом результате первой стоит кнопка повтора', (
+      tester,
+    ) async {
+      final session = QuizPresets.forCase(
+        GramCase.nominativ,
+        NumberMode.singular,
+      );
+      final answers = [
+        for (final q in session.build())
+          AnswerRecord(question: q, given: 'мимо', correct: false),
+      ];
+      await tester.pumpWidget(
+        MaterialApp(
+          home: ResultScreen(answers: answers, session: session),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Порог не взят: продолжение предлагается, но вторым.
+      expect(
+        tester.getTopLeft(find.text('Пройти ещё раз')).dy,
+        lessThan(
+          tester.getTopLeft(find.text('Дальше: множественное число')).dy,
+        ),
+      );
+    });
+
+    testWidgets('после множественного предлагается смешанная тренировка', (
+      tester,
+    ) async {
+      await pumpResult(
+        tester,
+        QuizPresets.forCase(GramCase.nominativ, NumberMode.plural),
+      );
+      expect(find.text('Дальше: оба числа вперемешку'), findsOneWidget);
+    });
+
+    testWidgets('после смешанной тренировки предлагается следующий падеж', (
+      tester,
+    ) async {
+      await pumpResult(
+        tester,
+        QuizPresets.forCase(GramCase.nominativ, NumberMode.mixed),
+      );
+      expect(find.textContaining('Дальше:'), findsNothing);
+      expect(find.text('Следующий падеж: Genitiv'), findsOneWidget);
     });
   });
 }
