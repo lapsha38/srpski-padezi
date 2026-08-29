@@ -121,7 +121,8 @@ class FormsTable extends StatelessWidget {
         columnSpacing: 24,
         headingRowHeight: 40,
         dataRowMinHeight: 44,
-        dataRowMaxHeight: 76,
+        // Примеры в первой колонке переносятся: высота строки не фиксирована.
+        dataRowMaxHeight: double.infinity,
         columns: [
           DataColumn(label: Text('Тип', style: labelStyle)),
           DataColumn(label: Text(singularLabel, style: labelStyle)),

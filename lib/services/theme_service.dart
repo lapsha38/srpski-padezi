@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// Выбранная тема оформления; сохраняется между запусками.
-///
-/// По умолчанию тема системная - приложение выглядит так же, как остальные
-/// на устройстве. Как только тему переключили кнопкой, выбор запоминается,
-/// в том числе в веб-версии.
+/// Выбранная тема; по умолчанию системная, ручной выбор сохраняется.
 class ThemeService extends ChangeNotifier {
   ThemeService._();
 
@@ -27,10 +23,8 @@ class ThemeService extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Переключает тему на противоположную той, что видно сейчас.
-  ///
-  /// Пока выбор не сделан, тема системная, поэтому «противоположная»
-  /// считается от текущей яркости экрана, а не от значения [mode].
+  /// Переключает тему; при системной теме отсчёт идёт от текущей яркости,
+  /// а не от [mode].
   Future<void> toggle(Brightness current) => setMode(
     current == Brightness.dark ? ThemeMode.light : ThemeMode.dark,
   );

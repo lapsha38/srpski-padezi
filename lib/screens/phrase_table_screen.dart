@@ -6,12 +6,8 @@ import 'package:srpski_padezi/theme.dart';
 import 'package:srpski_padezi/widgets/rule_sheet.dart';
 import 'package:srpski_padezi/widgets/tag_chip.dart';
 
-/// Режим «таблица склонения»: одно словосочетание во всех семи падежах.
-///
-/// Обычная тренировка показывает разные слова, поэтому склонение целиком
-/// в ней не видно. Здесь пара слов одна, а заполнить нужно всю таблицу -
-/// так становится видно, что прилагательное и существительное меняют
-/// окончания по-разному.
+/// Одно словосочетание во всех семи падежах: видно, что прилагательное
+/// и существительное меняют окончания по-разному.
 class PhraseTableScreen extends StatefulWidget {
   const PhraseTableScreen({this.generator, super.key});
 
@@ -58,8 +54,7 @@ class _PhraseTableScreenState extends State<PhraseTableScreen> {
     final choice = await showModalBottomSheet<String>(
       context: context,
       showDragHandle: true,
-      // Вариантов четыре, и формы бывают длинные: лист должен уметь
-      // вырасти выше половины экрана.
+      // Формы бывают длинные: листу нужна высота больше половины экрана.
       isScrollControlled: true,
       builder: (context) => _OptionsSheet(row: row),
     );
@@ -184,8 +179,7 @@ class _PhraseCard extends StatelessWidget {
 
 /// Строка таблицы: падеж слева, форма справа.
 ///
-/// Строка собрана из Row, а не из ListTile: формы бывают длинные
-/// («jednostavnim mogućnostima»), и им нужно переноситься, а не обрезаться.
+/// Не ListTile: длинным формам нужен перенос, а не обрезка.
 class _CaseRow extends StatelessWidget {
   const _CaseRow({required this.row, required this.given, required this.onTap});
 

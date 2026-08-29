@@ -91,17 +91,18 @@ void main() {
       await tester.pumpWidget(const SrpskiPadeziApp());
       await tester.pumpAndSettle();
 
+      const last = 'Vokativ - звательный';
       await tester.scrollUntilVisible(
-        find.text('Lokativ - предложный (местный)'),
+        find.text(last),
         200,
         scrollable: find.byType(Scrollable).first,
       );
-      await tester.ensureVisible(find.text('Lokativ - предложный (местный)'));
+      await tester.ensureVisible(find.text(last));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Lokativ - предложный (местный)'));
+      await tester.tap(find.text(last));
       await tester.pumpAndSettle();
 
-      expect(find.text('7. Lokativ'), findsOneWidget);
+      expect(find.text('7. Vokativ'), findsOneWidget);
     });
 
     testWidgets('раздел грамматики открывается и запускает тренировку', (
@@ -418,7 +419,7 @@ void main() {
         QuizPresets.forCase(GramCase.nominativ, NumberMode.mixed),
       );
       expect(find.textContaining('Дальше:'), findsNothing);
-      expect(find.text('Следующий падеж: Genitiv'), findsOneWidget);
+      expect(find.text('Следующий падеж: Akuzativ'), findsOneWidget);
     });
   });
 }

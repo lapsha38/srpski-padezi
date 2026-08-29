@@ -20,7 +20,9 @@ class CaseScreen extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: Text('${gramCase.order}. ${gramCase.sr}')),
+      appBar: AppBar(
+        title: Text('${caseLearningStep(gramCase)}. ${gramCase.sr}'),
+      ),
       body: ContentWidth(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),

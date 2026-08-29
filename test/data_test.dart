@@ -68,6 +68,20 @@ void main() {
       }
     });
 
+    test('маршрут обучения содержит все падежи по одному разу', () {
+      expect(kCaseLearningOrder.toSet(), GramCase.values.toSet());
+      expect(kCaseLearningOrder.first, GramCase.nominativ);
+      expect(kCaseLearningOrder.last, GramCase.vokativ);
+      expect(
+        kCaseLearningOrder.indexOf(GramCase.dativ),
+        kCaseLearningOrder.indexOf(GramCase.lokativ) + 1,
+        reason: 'датив идёт сразу за локативом: формы у них общие',
+      );
+      expect(nextCaseInLearningOrder(GramCase.vokativ), isNull);
+      expect(nextCaseInLearningOrder(GramCase.nominativ), GramCase.akuzativ);
+      expect(caseLearningStep(GramCase.nominativ), 1);
+    });
+
     test('в каждой карточке есть окончания, примеры и разбор ошибок', () {
       for (final info in kCaseInfos) {
         expect(info.endings, isNotEmpty, reason: info.gramCase.sr);

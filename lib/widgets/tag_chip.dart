@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:srpski_padezi/models/models.dart';
 
-/// Цвета метки числа: единственное - зелёная, множественное - жёлтая.
-///
-/// Число - единственная метка, которую нужно замечать боковым зрением:
-/// от неё зависит вся форма слова, а текст «ед. ч.» и «мн. ч.» различается
-/// одной буквой.
+/// Цвета метки числа: «ед. ч.» и «мн. ч.» различаются одной буквой,
+/// поэтому число различает цвет, а не текст.
 ({Color background, Color foreground}) numberBadgeColors(
   GramNumber number,
   Brightness brightness,

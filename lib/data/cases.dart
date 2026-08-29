@@ -1,8 +1,31 @@
 import 'package:srpski_padezi/models/models.dart';
 
+/// Порядок изучения: от нужного в первых фразах к тому, что можно отложить.
+///
+/// Школьная нумерация (N-G-D-A-V-I-L) для этого не годится: второй же падеж
+/// в ней самый трудный. Датив идёт сразу за локативом - формы у них общие.
+const List<GramCase> kCaseLearningOrder = [
+  GramCase.nominativ,
+  GramCase.akuzativ,
+  GramCase.lokativ,
+  GramCase.dativ,
+  GramCase.genitiv,
+  GramCase.instrumental,
+  GramCase.vokativ,
+];
+
+/// Номер падежа в маршруте обучения (1-7).
+int caseLearningStep(GramCase c) => kCaseLearningOrder.indexOf(c) + 1;
+
+/// Следующий падеж маршрута; null - если это последний.
+GramCase? nextCaseInLearningOrder(GramCase c) {
+  final next = kCaseLearningOrder.indexOf(c) + 1;
+  return next < kCaseLearningOrder.length ? kCaseLearningOrder[next] : null;
+}
+
 /// Теоретические карточки по всем семи падежам сербского языка.
 const List<CaseInfo> kCaseInfos = [
-  // ── 1. Nominativ ────────────────────────────────────────────────────────
+  // ── Nominativ ────────────────────────────────────────────────────────
   CaseInfo(
     gramCase: GramCase.nominativ,
     tagline: 'Исходная форма слова: кто? что?',
@@ -54,7 +77,7 @@ const List<CaseInfo> kCaseInfos = [
     ],
   ),
 
-  // ── 2. Genitiv ──────────────────────────────────────────────────────────
+  // ── Genitiv ──────────────────────────────────────────────────────────
   CaseInfo(
     gramCase: GramCase.genitiv,
     tagline: 'Принадлежность, отсутствие, количество: кого? чего?',
@@ -130,7 +153,7 @@ const List<CaseInfo> kCaseInfos = [
     ],
   ),
 
-  // ── 3. Dativ ────────────────────────────────────────────────────────────
+  // ── Dativ ────────────────────────────────────────────────────────────
   CaseInfo(
     gramCase: GramCase.dativ,
     tagline: 'Адресат и направление: кому? чему?',
@@ -180,7 +203,7 @@ const List<CaseInfo> kCaseInfos = [
     ],
   ),
 
-  // ── 4. Akuzativ ─────────────────────────────────────────────────────────
+  // ── Akuzativ ─────────────────────────────────────────────────────────
   CaseInfo(
     gramCase: GramCase.akuzativ,
     tagline: 'Прямое дополнение и движение куда-то: кого? что?',
@@ -251,7 +274,7 @@ const List<CaseInfo> kCaseInfos = [
     ],
   ),
 
-  // ── 5. Vokativ ──────────────────────────────────────────────────────────
+  // ── Vokativ ──────────────────────────────────────────────────────────
   CaseInfo(
     gramCase: GramCase.vokativ,
     tagline: 'Обращение - падеж, которого нет в русском',
@@ -318,7 +341,7 @@ const List<CaseInfo> kCaseInfos = [
     ],
   ),
 
-  // ── 6. Instrumental ─────────────────────────────────────────────────────
+  // ── Instrumental ─────────────────────────────────────────────────────
   CaseInfo(
     gramCase: GramCase.instrumental,
     tagline: 'Орудие и совместность: кем? чем? с кем?',
@@ -393,7 +416,7 @@ const List<CaseInfo> kCaseInfos = [
     ],
   ),
 
-  // ── 7. Lokativ ──────────────────────────────────────────────────────────
+  // ── Lokativ ──────────────────────────────────────────────────────────
   CaseInfo(
     gramCase: GramCase.lokativ,
     tagline: 'Место и тема разговора - всегда с предлогом',

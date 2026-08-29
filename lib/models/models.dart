@@ -61,10 +61,7 @@ extension GramNumberX on GramNumber {
   String get sr => this == GramNumber.singular ? 'jednina' : 'množina';
 }
 
-/// Число, которое обозначает метка задания; null - если метка о другом.
-///
-/// Метки хранятся строками, поэтому число распознаётся по тому же тексту,
-/// который его и печатает.
+/// Число по тексту метки; null - если метка о другом.
 GramNumber? gramNumberFromLabel(String label) {
   for (final number in GramNumber.values) {
     if (label == number.ruShort) return number;
@@ -141,11 +138,8 @@ class Noun {
   /// Примечание об особенности слова (чередование, беглое «а» и т. п.).
   final String? note;
 
-  /// Род множественного числа, если он отличается от рода единственного.
-  ///
-  /// Так согласуются oko - oči и uvo - uši (lepe oči, а не «lepa oči»), а
-  /// также мужские слова на -a: во множественном числе определение при них
-  /// женского рода (moje kolege, naše komšije).
+  /// Род для согласования во множественном числе, если он свой:
+  /// lepe oči, moje kolege.
   final Gender? pluralGender;
 
   bool get hasPlural => pl != null;

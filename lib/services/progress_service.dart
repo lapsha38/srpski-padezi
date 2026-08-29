@@ -2,17 +2,14 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:srpski_padezi/data/cases.dart';
 import 'package:srpski_padezi/models/models.dart';
 
-/// Хранит прогресс обучения между запусками приложения.
+/// Прогресс обучения между запусками.
 ///
-/// Результаты лежат в одной таблице «ключ тренировки → лучший результат»,
-/// поэтому и падежи, и числительные учитываются одинаково. Ключ падежа -
-/// `case_<номер>`, ключ раздела числительных - `numerals_<тема>`.
-///
-/// Падеж считается пройденным, если лучший результат не ниже [passingScore].
-/// Это только отметка о прогрессе: все падежи доступны с самого начала,
-/// порядок в списке подсказывает маршрут, но ничего не запирает.
+/// Одна таблица «ключ тренировки → лучший результат», поэтому падежи
+/// и числительные учитываются одинаково. Отметка о прохождении ничего
+/// не запирает: все разделы доступны сразу.
 class ProgressService extends ChangeNotifier {
   ProgressService._();
 
@@ -50,10 +47,11 @@ class ProgressService extends ChangeNotifier {
 
   bool get isCourseComplete => passedCount == GramCase.values.length;
 
-  /// Следующий падеж, который стоит изучать.
-  GramCase get currentCase => GramCase.values.firstWhere(
+  /// Следующий падеж, который стоит изучать - по маршруту обучения,
+  /// а не по школьной нумерации.
+  GramCase get currentCase => kCaseLearningOrder.firstWhere(
     (c) => !isPassed(c),
-    orElse: () => GramCase.values.last,
+    orElse: () => kCaseLearningOrder.last,
   );
 
   Future<void> load() async {

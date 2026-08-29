@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:srpski_padezi/data/cases.dart';
 import 'package:srpski_padezi/logic/quiz_engine.dart';
 import 'package:srpski_padezi/models/models.dart';
 import 'package:srpski_padezi/screens/case_screen.dart';
@@ -22,10 +23,9 @@ class ResultScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final mistakes = answers.where((a) => !a.correct).toList();
     final gramCase = session.gramCase;
-    final nextCase =
-        gramCase != null && gramCase.index + 1 < GramCase.values.length
-        ? GramCase.values[gramCase.index + 1]
-        : null;
+    final nextCase = gramCase == null
+        ? null
+        : nextCaseInLearningOrder(gramCase);
     final nextStep = session.next;
 
     return Scaffold(
@@ -62,9 +62,7 @@ class ResultScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            // Пока порог не взят, разумнее повторить ту же тренировку,
-            // поэтому главной кнопкой «Дальше» становится только после
-            // прохождения.
+            // Пока порог не взят, главное действие - повторить.
             if (nextStep != null && _passed) ...[
               FilledButton(
                 onPressed: () => _startNext(context, nextStep),
@@ -88,8 +86,7 @@ class ResultScreen extends StatelessWidget {
                 ),
               ],
             ],
-            // Следующий падеж предлагается в конце цепочки: пока у урока
-            // есть продолжение, уходить из него рано.
+            // Пока у урока есть продолжение, уходить из него рано.
             if (nextCase != null && nextStep == null) ...[
               const SizedBox(height: 8),
               FilledButton.tonal(

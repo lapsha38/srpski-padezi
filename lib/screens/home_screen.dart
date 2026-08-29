@@ -47,17 +47,12 @@ class HomeScreen extends StatelessWidget {
                   'Падежи',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  'Порядок подсказывает маршрут, но открыты все сразу.',
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
                 const SizedBox(height: 8),
-                for (final info in kCaseInfos) ...[
+                for (final gramCase in kCaseLearningOrder) ...[
                   _CaseTile(
-                    info: info,
-                    passed: progress.isPassed(info.gramCase),
-                    bestScore: progress.caseScore(info.gramCase),
+                    info: caseInfoFor(gramCase),
+                    passed: progress.isPassed(gramCase),
+                    bestScore: progress.caseScore(gramCase),
                   ),
                   const SizedBox(height: 8),
                 ],
@@ -209,7 +204,7 @@ class _CaseTile extends StatelessWidget {
                 radius: 20,
                 child: passed
                     ? const Icon(Icons.check)
-                    : Text('${gramCase.order}'),
+                    : Text('${caseLearningStep(gramCase)}'),
               ),
               const SizedBox(width: 16),
               Expanded(
