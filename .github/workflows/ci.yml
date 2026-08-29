@@ -110,30 +110,6 @@ jobs:
         with:
           files: build/app/outputs/flutter-apk/app-release.apk
 
-  web:
-    name: Web build
-    needs: check
-    # The web version is published from a push by the pages job, so a
-    # release does not need this build.
-    if: github.event_name == 'push'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          cache: true
-      - run: flutter pub get
-      # The resulting directory can be hosted anywhere and installed on an
-      # iPhone through "Add to Home Screen".
-      - name: Build web version
-        run: flutter build web --release
-      - uses: actions/upload-artifact@v7
-        with:
-          name: srpski-padezi-web
-          path: build/web
-          if-no-files-found: error
-
   pages:
     name: Publish web version to GitHub Pages
     needs: check
