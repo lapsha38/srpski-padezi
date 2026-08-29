@@ -82,6 +82,14 @@ void main() {
       expect(caseLearningStep(GramCase.nominativ), 1);
     });
 
+    test('в таблице склонения локатив стоит сразу за дативом', () {
+      expect(kCaseTableOrder.toSet(), GramCase.values.toSet());
+      expect(
+        kCaseTableOrder.indexOf(GramCase.lokativ),
+        kCaseTableOrder.indexOf(GramCase.dativ) + 1,
+      );
+    });
+
     test('в каждой карточке есть окончания, примеры и разбор ошибок', () {
       for (final info in kCaseInfos) {
         expect(info.endings, isNotEmpty, reason: info.gramCase.sr);

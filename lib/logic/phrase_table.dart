@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:srpski_padezi/data/adjectives.dart';
+import 'package:srpski_padezi/data/cases.dart';
 import 'package:srpski_padezi/data/nouns.dart';
 import 'package:srpski_padezi/logic/phrase_forms.dart';
 import 'package:srpski_padezi/models/models.dart';
@@ -32,7 +33,7 @@ class PhraseTable {
   final Noun noun;
   final GramNumber number;
 
-  /// Семь строк в порядке [GramCase.values].
+  /// Семь строк в порядке [kCaseTableOrder].
   final List<PhraseTableRow> rows;
 
   /// Обе словарные формы через плюс: готовое словосочетание совпало бы
@@ -71,7 +72,7 @@ class PhraseTableGenerator {
       noun: noun,
       number: number,
       rows: [
-        for (final gramCase in GramCase.values)
+        for (final gramCase in kCaseTableOrder)
           _row(
             adjective: adjective,
             noun: noun,

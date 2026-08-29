@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:srpski_padezi/data/adjectives.dart';
+import 'package:srpski_padezi/data/cases.dart';
 import 'package:srpski_padezi/data/nouns.dart';
 import 'package:srpski_padezi/data/numerals.dart';
 import 'package:srpski_padezi/logic/numeral_quiz.dart';
@@ -299,7 +300,7 @@ void main() {
         expect(table.rows.length, GramCase.values.length);
         for (var i = 0; i < table.rows.length; i++) {
           final row = table.rows[i];
-          expect(row.gramCase, GramCase.values[i]);
+          expect(row.gramCase, kCaseTableOrder[i]);
           expect(row.options.length, 4, reason: row.answer);
           expect(row.options.toSet().length, 4, reason: row.answer);
           expect(row.options, contains(row.answer));

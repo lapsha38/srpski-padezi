@@ -14,6 +14,18 @@ const List<GramCase> kCaseLearningOrder = [
   GramCase.vokativ,
 ];
 
+/// Порядок строк в таблице склонения: школьный, но локатив поднят к дативу -
+/// формы у них совпадают, и рядом это видно сразу.
+const List<GramCase> kCaseTableOrder = [
+  GramCase.nominativ,
+  GramCase.genitiv,
+  GramCase.dativ,
+  GramCase.lokativ,
+  GramCase.akuzativ,
+  GramCase.vokativ,
+  GramCase.instrumental,
+];
+
 /// Номер падежа в маршруте обучения (1-7).
 int caseLearningStep(GramCase c) => kCaseLearningOrder.indexOf(c) + 1;
 
