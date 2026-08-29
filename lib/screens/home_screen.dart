@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:srpski_padezi/data/cases.dart';
 import 'package:srpski_padezi/data/grammar_topics.dart';
 import 'package:srpski_padezi/logic/numeral_quiz.dart';
+import 'package:srpski_padezi/logic/phrase_table.dart';
 import 'package:srpski_padezi/logic/quiz_engine.dart';
 import 'package:srpski_padezi/models/models.dart';
 import 'package:srpski_padezi/screens/case_screen.dart';
 import 'package:srpski_padezi/screens/grammar_screen.dart';
 import 'package:srpski_padezi/screens/numerals_screen.dart';
+import 'package:srpski_padezi/screens/phrase_table_screen.dart';
 import 'package:srpski_padezi/screens/quiz_screen.dart';
 import 'package:srpski_padezi/services/progress_service.dart';
 import 'package:srpski_padezi/theme.dart';
@@ -66,6 +68,8 @@ class HomeScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 const _PhrasesCard(),
+                const SizedBox(height: 8),
+                const _PhraseTableCard(),
                 const SizedBox(height: 8),
                 const _NumeralsCard(),
                 const SizedBox(height: 8),
@@ -438,6 +442,66 @@ class _PhrasesCard extends StatelessWidget {
                     Text(
                       'Согласование в одной форме: lepog grada, lepim ženama. '
                       'Все падежи вперемешку.',
+                      style: theme.textTheme.bodySmall,
+                    ),
+                    if (best > 0) ...[
+                      const SizedBox(height: 6),
+                      Text(
+                        'Лучший результат: $best%',
+                        style: theme.textTheme.labelMedium,
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Карточка режима «таблица склонения».
+class _PhraseTableCard extends StatelessWidget {
+  const _PhraseTableCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final best = ProgressService.instance.bestScore(
+      PhraseTableGenerator.progressKey,
+    );
+
+    return Card(
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute<void>(builder: (_) => const PhraseTableScreen()),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              const CircleAvatar(
+                radius: 20,
+                child: Icon(Icons.table_rows_outlined),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Таблица склонения',
+                      style: theme.textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Случайное словосочетание и все семь падежей сразу: '
+                      'форму для каждой строки выбираешь из вариантов.',
                       style: theme.textTheme.bodySmall,
                     ),
                     if (best > 0) ...[

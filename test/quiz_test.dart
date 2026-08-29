@@ -5,6 +5,7 @@ import 'package:srpski_padezi/data/adjectives.dart';
 import 'package:srpski_padezi/data/nouns.dart';
 import 'package:srpski_padezi/data/numerals.dart';
 import 'package:srpski_padezi/logic/numeral_quiz.dart';
+import 'package:srpski_padezi/logic/phrase_table.dart';
 import 'package:srpski_padezi/logic/quiz_engine.dart';
 import 'package:srpski_padezi/models/models.dart';
 
@@ -243,6 +244,71 @@ void main() {
           reason: q.answer,
         );
       }
+    });
+  });
+
+  group('Таблица склонения', () {
+    test('в таблице семь падежей с корректными вариантами', () {
+      for (var seed = 0; seed < 200; seed++) {
+        final table = PhraseTableGenerator(Random(seed)).build();
+        expect(table.rows.length, GramCase.values.length);
+        for (var i = 0; i < table.rows.length; i++) {
+          final row = table.rows[i];
+          expect(row.gramCase, GramCase.values[i]);
+          expect(row.options.length, 4, reason: row.answer);
+          expect(row.options.toSet().length, 4, reason: row.answer);
+          expect(row.options, contains(row.answer));
+        }
+      }
+    });
+
+    test('все строки описывают одно словосочетание', () {
+      final table = PhraseTableGenerator(Random(7)).build();
+      for (final row in table.rows) {
+        final expected = phraseForm(
+          table.adjective,
+          table.noun,
+          row.gramCase,
+          table.number,
+        );
+        expect(row.answer, expected, reason: row.gramCase.sr);
+      }
+    });
+
+    test('множественное число берётся только у слов, которые его имеют', () {
+      for (var seed = 0; seed < 300; seed++) {
+        final table = PhraseTableGenerator(Random(seed)).build();
+        if (table.number == GramNumber.plural) {
+          expect(table.noun.hasPlural, isTrue, reason: table.noun.lemma);
+        }
+      }
+    });
+
+    test('заголовок не подсказывает ни одну строку таблицы', () {
+      for (var seed = 0; seed < 200; seed++) {
+        final table = PhraseTableGenerator(Random(seed)).build();
+        for (final row in table.rows) {
+          expect(
+            table.headword.contains(row.answer),
+            isFalse,
+            reason: '${table.headword} -> ${row.answer}',
+          );
+        }
+      }
+    });
+
+    test('прилагательное согласовано с существительным', () {
+      // Множественное число слова oko - женского рода: lepe oči.
+      final oko = kNounsByLemma['oko']!;
+      expect(
+        phraseForm(
+          kCommonAdjectives.first,
+          oko,
+          GramCase.nominativ,
+          GramNumber.plural,
+        ),
+        '${kCommonAdjectives.first.stem}e oči',
+      );
     });
   });
 }

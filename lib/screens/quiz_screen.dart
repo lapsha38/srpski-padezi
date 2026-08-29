@@ -5,6 +5,7 @@ import 'package:srpski_padezi/screens/result_screen.dart';
 import 'package:srpski_padezi/services/progress_service.dart';
 import 'package:srpski_padezi/theme.dart';
 import 'package:srpski_padezi/widgets/rule_sheet.dart';
+import 'package:srpski_padezi/widgets/tag_chip.dart';
 
 /// Экран тренировки: вопрос и четыре варианта ответа.
 class QuizScreen extends StatefulWidget {
@@ -190,7 +191,7 @@ class _QuestionCard extends StatelessWidget {
                 spacing: 8,
                 runSpacing: 8,
                 children: [
-                  for (final tag in question.tags) Chip(label: Text(tag)),
+                  for (final tag in question.tags) TagChip(tag),
                 ],
               ),
               const SizedBox(height: 12),

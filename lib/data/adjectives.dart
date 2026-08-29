@@ -304,6 +304,29 @@ String adjectiveForm(
       animate: animate,
     );
 
+/// Словосочетание «прилагательное + существительное» в одной форме.
+///
+/// Прилагательное согласуется с существительным по роду, числу, падежу и
+/// одушевлённости; null - если у слова нет такой формы (например,
+/// множественного числа).
+String? phraseForm(
+  Adjective adjective,
+  Noun noun,
+  GramCase gramCase,
+  GramNumber number,
+) {
+  final form = noun.form(gramCase, number);
+  if (form == null) return null;
+  final adj = adjectiveForm(
+    adjective,
+    gender: noun.genderIn(number),
+    gramCase: gramCase,
+    number: number,
+    animate: noun.animate,
+  );
+  return '$adj $form';
+}
+
 /// Строки таблицы окончаний прилагательного для одного падежа -
 /// используются в правиле, которое можно открыть прямо в тренировке.
 List<EndingRow> adjectiveEndingRows(GramCase gramCase) {

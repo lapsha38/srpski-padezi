@@ -61,6 +61,17 @@ extension GramNumberX on GramNumber {
   String get sr => this == GramNumber.singular ? 'jednina' : 'množina';
 }
 
+/// Число, которое обозначает метка задания; null - если метка о другом.
+///
+/// Метки хранятся строками, поэтому число распознаётся по тому же тексту,
+/// который его и печатает.
+GramNumber? gramNumberFromLabel(String label) {
+  for (final number in GramNumber.values) {
+    if (label == number.ruShort) return number;
+  }
+  return null;
+}
+
 /// Род существительного.
 enum Gender { masculine, feminine, neuter }
 

@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:srpski_padezi/data/adjectives.dart';
 import 'package:srpski_padezi/data/nouns.dart';
 import 'package:srpski_padezi/data/sentences.dart';
+import 'package:srpski_padezi/logic/phrase_forms.dart';
 import 'package:srpski_padezi/models/models.dart';
 
 /// Какое число тренируем.
@@ -296,57 +297,23 @@ class QuizGenerator {
     required GramNumber number,
     SentenceTask? task,
   }) {
-    String phrase(GramCase c, GramNumber n) {
-      final adj = adjectiveForm(
-        adjective,
-        gender: noun.genderIn(n),
-        gramCase: c,
-        number: n,
-        animate: noun.animate,
-      );
-      return '$adj ${noun.form(c, n)}';
-    }
-
     // Словарная подача пары: прилагательное согласовано с существительным
     // в именительном падеже единственного числа.
-    final dictionaryForm = adjectiveForm(
+    final dictionaryPair = phraseForm(
       adjective,
-      gender: noun.gender,
-      gramCase: GramCase.nominativ,
-      number: GramNumber.singular,
+      noun,
+      GramCase.nominativ,
+      GramNumber.singular,
+    )!;
+    final answer = phraseForm(adjective, noun, gramCase, number)!;
+    final options = phraseOptions(
+      adjective: adjective,
+      noun: noun,
+      gramCase: gramCase,
+      number: number,
+      answer: answer,
+      random: _random,
     );
-    final dictionaryPair = '$dictionaryForm ${noun.lemma}';
-    final answer = phrase(gramCase, number);
-    final other = number == GramNumber.singular
-        ? GramNumber.plural
-        : GramNumber.singular;
-
-    final candidates = <String>[];
-    for (final c in GramCase.values) {
-      if (c == gramCase) continue;
-      candidates.add(phrase(c, number));
-      // Рассогласованная пара - типичная ошибка: прилагательное «отстаёт».
-      final wrongAdj = adjectiveForm(
-        adjective,
-        gender: noun.genderIn(number),
-        gramCase: c,
-        number: number,
-        animate: noun.animate,
-      );
-      candidates.add('$wrongAdj ${noun.form(gramCase, number)}');
-    }
-    if (noun.hasPlural) {
-      for (final c in GramCase.values) {
-        candidates.add(phrase(c, other));
-      }
-    }
-
-    final options = <String>{answer};
-    candidates.shuffle(_random);
-    for (final c in candidates) {
-      if (options.length >= 4) break;
-      options.add(c);
-    }
 
     final adjEnding = adjectiveEnding(
       gender: noun.genderIn(number),
@@ -369,7 +336,7 @@ class QuizGenerator {
         (_, true) => 'Вставьте «${adjective.ru} + ${noun.ru}» в нужной форме.',
       },
       answer: answer,
-      options: options.toList()..shuffle(_random),
+      options: options,
       subject: task != null
           ? null
           : answer == dictionaryPair

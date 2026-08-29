@@ -1,8 +1,15 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:srpski_padezi/logic/phrase_table.dart';
 import 'package:srpski_padezi/main.dart';
+import 'package:srpski_padezi/models/models.dart';
+import 'package:srpski_padezi/screens/phrase_table_screen.dart';
 import 'package:srpski_padezi/services/progress_service.dart';
+import 'package:srpski_padezi/widgets/selectable_on_web.dart';
+import 'package:srpski_padezi/widgets/tag_chip.dart';
 
 void main() {
   group('Интерфейс', () {
@@ -152,6 +159,107 @@ void main() {
       await tester.tap(find.text('Правило'));
       await tester.pumpAndSettle();
       expect(find.byType(BottomSheet), findsOneWidget);
+    });
+
+    testWidgets('метки числа покрашены в разные цвета', (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: Row(
+              children: [
+                NumberChip(GramNumber.singular),
+                NumberChip(GramNumber.plural),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      final chips = tester.widgetList<Chip>(find.byType(Chip)).toList();
+      expect(chips.length, 2);
+      expect(chips[0].backgroundColor, isNot(chips[1].backgroundColor));
+      expect(
+        chips[0].backgroundColor,
+        numberBadgeColors(GramNumber.singular, Brightness.light).background,
+      );
+      expect(
+        chips[1].backgroundColor,
+        numberBadgeColors(GramNumber.plural, Brightness.light).background,
+      );
+    });
+
+    testWidgets('таблица склонения заполняется выбором формы', (tester) async {
+      await tester.pumpWidget(const SrpskiPadeziApp());
+      await tester.pumpAndSettle();
+
+      await tester.scrollUntilVisible(
+        find.text('Таблица склонения'),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.ensureVisible(find.text('Таблица склонения'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Таблица склонения'));
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('Заполнено 0 из 7'), findsOneWidget);
+      expect(find.text('выбрать'), findsNWidgets(7));
+
+      // Первая строка: открываем варианты и выбираем любой.
+      await tester.tap(find.text('выбрать').first);
+      await tester.pumpAndSettle();
+      expect(find.text('Правило'), findsOneWidget);
+
+      await tester.tap(find.byType(OutlinedButton).first);
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('Заполнено 1 из 7'), findsOneWidget);
+      expect(find.text('выбрать'), findsNWidgets(6));
+    });
+
+    testWidgets('таблица не ломает вёрстку на длинных формах', (tester) async {
+      // Формы бывают длинные («jednostavnim mogućnostima»), а экран узкий:
+      // прогоняем много разных пар слов на телефонной ширине.
+      tester.view.physicalSize = const Size(360, 640);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+
+      for (var seed = 0; seed < 40; seed++) {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: PhraseTableScreen(
+              key: ValueKey(seed),
+              generator: PhraseTableGenerator(Random(seed)),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // Заполняем первую строку: так проверяется и вид с ответом.
+        await tester.tap(find.text('выбрать').first);
+        await tester.pumpAndSettle();
+        await tester.tap(find.byType(OutlinedButton).first);
+        await tester.pumpAndSettle();
+
+        expect(find.textContaining('Заполнено 1 из 7'), findsOneWidget);
+      }
+    });
+
+    testWidgets('на вебе текст можно выделить', (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: SelectableOnWeb(enabled: true, child: Text('lepa knjiga')),
+        ),
+      );
+      expect(find.byType(SelectionArea), findsOneWidget);
+
+      // На телефоне выделение выключено и лишнего слоя нет.
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: SelectableOnWeb(enabled: false, child: Text('lepa knjiga')),
+        ),
+      );
+      expect(find.byType(SelectionArea), findsNothing);
     });
   });
 }
