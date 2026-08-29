@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:srpski_padezi/data/adjectives.dart';
 import 'package:srpski_padezi/data/cases.dart';
 import 'package:srpski_padezi/data/choices.dart';
 import 'package:srpski_padezi/data/comparison.dart';
@@ -102,6 +103,74 @@ void main() {
     test('для каждого падежа есть задания', () {
       for (final c in GramCase.values) {
         expect(sentencesFor(c), isNotEmpty, reason: c.sr);
+      }
+    });
+
+    // Пул предложений - самое узкое место тренажёра: если на падеж и число
+    // приходится всего пара фраз, они заучиваются вместо правила.
+    test('на каждый падеж и число приходится хотя бы 20 предложений', () {
+      for (final c in GramCase.values) {
+        for (final number in GramNumber.values) {
+          final tasks = sentencesFor(
+            c,
+          ).where((t) => t.number == number).toList();
+          expect(
+            tasks.length,
+            greaterThanOrEqualTo(20),
+            reason: '${c.sr}, ${number.ruShort}',
+          );
+        }
+      }
+    });
+
+    test('предложение не начинается с пропуска', () {
+      for (final task in kSentences) {
+        expect(
+          task.template.startsWith('___'),
+          isFalse,
+          reason: '${task.template} - форма встала бы со строчной буквы',
+        );
+      }
+    });
+
+    test('задания не повторяются', () {
+      final seen = <String>{};
+      for (final task in kSentences) {
+        expect(
+          seen.add(
+            '${task.lemma}|${task.gramCase}|${task.number}|'
+            '${task.template}',
+          ),
+          isTrue,
+          reason: task.template,
+        );
+      }
+    });
+  });
+
+  group('Словарь прилагательных', () {
+    test('прилагательные для словосочетаний есть в словаре', () {
+      expect(kCommonAdjectives, hasLength(greaterThanOrEqualTo(20)));
+      for (final adjective in kCommonAdjectives) {
+        expect(kAdjectives, contains(adjective), reason: adjective.lemma);
+      }
+    });
+
+    test('леммы не повторяются', () {
+      final lemmas = kAdjectives.map((a) => a.lemma).toList();
+      expect(lemmas.toSet().length, lemmas.length);
+    });
+
+    test('основа не оканчивается на мягкий согласный', () {
+      // Окончания в [adjectiveForm] - только твёрдого вида (-og, -om),
+      // поэтому мягкая основа (svež → svežeg) дала бы неверную форму.
+      const soft = ['ž', 'š', 'č', 'ć', 'đ', 'j', 'lj', 'nj'];
+      for (final adjective in kAdjectives) {
+        expect(
+          soft.any(adjective.stem.endsWith),
+          isFalse,
+          reason: adjective.lemma,
+        );
       }
     });
   });

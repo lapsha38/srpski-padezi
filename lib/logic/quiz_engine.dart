@@ -299,7 +299,7 @@ class QuizGenerator {
     String phrase(GramCase c, GramNumber n) {
       final adj = adjectiveForm(
         adjective,
-        gender: noun.gender,
+        gender: noun.genderIn(n),
         gramCase: c,
         number: n,
         animate: noun.animate,
@@ -328,7 +328,7 @@ class QuizGenerator {
       // Рассогласованная пара - типичная ошибка: прилагательное «отстаёт».
       final wrongAdj = adjectiveForm(
         adjective,
-        gender: noun.gender,
+        gender: noun.genderIn(number),
         gramCase: c,
         number: number,
         animate: noun.animate,
@@ -349,7 +349,7 @@ class QuizGenerator {
     }
 
     final adjEnding = adjectiveEnding(
-      gender: noun.gender,
+      gender: noun.genderIn(number),
       gramCase: gramCase,
       number: number,
       animate: noun.animate,
@@ -387,8 +387,8 @@ class QuizGenerator {
       ],
       hint:
           'Прилагательное берёт окончание -$adjEnding '
-          '(${noun.gender.ru}, ${number.ruShort}), существительное - своё: '
-          '$answer.',
+          '(${noun.genderIn(number).ru}, ${number.ruShort}), '
+          'существительное - своё: $answer.',
       summary:
           '${adjective.lemma} ${noun.lemma} → $answer '
           '(${gramCase.sr}, ${number.ruShort})',

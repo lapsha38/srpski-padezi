@@ -101,6 +101,7 @@ const List<Adjective> kAdjectives = [
   Adjective('opasan', 'опасный', 'opasn'),
   Adjective('slobodan', 'свободный', 'slobodn'),
   Adjective('zauzet', 'занятый', 'zauzet'),
+  Adjective('skup', 'дорогой', 'skup'),
   Adjective('glavni', 'главный', 'glavn'),
   Adjective('tih', 'тихий', 'tih'),
   Adjective('glasan', 'громкий', 'glasn'),
@@ -112,6 +113,100 @@ const List<Adjective> kAdjectives = [
   ),
   Adjective('zdrav', 'здоровый', 'zdrav'),
   Adjective('bolestan', 'больной', 'bolesn'),
+  Adjective('zelen', 'зелёный', 'zelen'),
+  Adjective('plav', 'синий, голубой', 'plav'),
+  Adjective('žut', 'жёлтый', 'žut'),
+  Adjective('siv', 'серый', 'siv'),
+  Adjective(
+    'tanak',
+    'тонкий',
+    'tank',
+    note: 'Беглое «а» пропадает: tanak → tanki, tankog.',
+  ),
+  Adjective(
+    'debeo',
+    'толстый',
+    'debel',
+    note: 'Основа debel-: debeo → debeli, debelog.',
+  ),
+  Adjective(
+    'gorak',
+    'горький',
+    'gork',
+    note: 'Беглое «а» пропадает: gorak → gorki.',
+  ),
+  Adjective(
+    'kiseo',
+    'кислый',
+    'kisel',
+    note: 'Основа kisel-: kiseo → kiseli, kiselog.',
+  ),
+  Adjective(
+    'mokar',
+    'мокрый',
+    'mokr',
+    note: 'Беглое «а» пропадает: mokar → mokri.',
+  ),
+  Adjective('suv', 'сухой', 'suv'),
+  Adjective('dubok', 'глубокий', 'dubok'),
+  Adjective('širok', 'широкий', 'širok'),
+  Adjective('uzak', 'узкий', 'usk', note: 'Основа usk-: uzak → uski, uskog.'),
+  Adjective(
+    'nizak',
+    'низкий',
+    'nisk',
+    note: 'Основа nisk-: nizak → niski, niskog.',
+  ),
+  Adjective('spor', 'медленный', 'spor'),
+  Adjective('ljut', 'злой, острый', 'ljut'),
+  Adjective(
+    'smešan',
+    'смешной',
+    'smešn',
+    note: 'Беглое «а» пропадает: smešan → smešni.',
+  ),
+  Adjective(
+    'ozbiljan',
+    'серьёзный',
+    'ozbiljn',
+    note: 'Беглое «а» пропадает: ozbiljan → ozbiljni.',
+  ),
+  Adjective(
+    'jednostavan',
+    'простой',
+    'jednostavn',
+    note: 'Беглое «а» пропадает: jednostavan → jednostavni.',
+  ),
+  Adjective(
+    'koristan',
+    'полезный',
+    'korisn',
+    note: 'Основа korisn-: koristan → korisni.',
+  ),
+  Adjective(
+    'moderan',
+    'современный',
+    'modern',
+    note: 'Беглое «а» пропадает: moderan → moderni.',
+  ),
+  Adjective(
+    'mračan',
+    'тёмный',
+    'mračn',
+    note: 'Беглое «а» пропадает: mračan → mračni.',
+  ),
+  Adjective(
+    'svetao',
+    'светлый',
+    'svetl',
+    note: 'Основа svetl-: svetao → svetli, svetlog.',
+  ),
+  Adjective(
+    'miran',
+    'спокойный',
+    'mirn',
+    note: 'Беглое «а» пропадает: miran → mirni.',
+  ),
 ];
 
 /// Прилагательные, которые сочетаются почти с любым существительным.
@@ -139,12 +234,22 @@ const List<String> _commonLemmas = [
   'tih',
   'prazan',
   'pun',
+  'moderan',
+  'jednostavan',
+  'koristan',
+  'svetao',
+  'mračan',
+  'miran',
+  'ozbiljan',
 ];
 
 /// Прилагательные для тренировки словосочетаний.
-final List<Adjective> kCommonAdjectives = kAdjectives
-    .where((a) => _commonLemmas.contains(a.lemma))
-    .toList();
+/// Поиск по лемме, а не фильтр: опечатка в [_commonLemmas] тогда падает
+/// с ошибкой, а не выбрасывает прилагательное из тренировки молча.
+final List<Adjective> kCommonAdjectives = [
+  for (final lemma in _commonLemmas)
+    kAdjectives.firstWhere((a) => a.lemma == lemma),
+];
 
 /// Окончания прилагательного определённого вида.
 ///

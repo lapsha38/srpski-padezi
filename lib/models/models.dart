@@ -107,6 +107,7 @@ class Noun {
     required this.sg,
     this.pl,
     this.note,
+    this.pluralGender,
   });
 
   /// Форма именительного падежа единственного числа.
@@ -129,7 +130,18 @@ class Noun {
   /// Примечание об особенности слова (чередование, беглое «а» и т. п.).
   final String? note;
 
+  /// Род множественного числа, если он отличается от рода единственного.
+  ///
+  /// Так согласуются oko - oči и uvo - uši (lepe oči, а не «lepa oči»), а
+  /// также мужские слова на -a: во множественном числе определение при них
+  /// женского рода (moje kolege, naše komšije).
+  final Gender? pluralGender;
+
   bool get hasPlural => pl != null;
+
+  /// Род, с которым согласуется прилагательное в заданном числе.
+  Gender genderIn(GramNumber n) =>
+      n == GramNumber.plural ? (pluralGender ?? gender) : gender;
 
   /// Форма слова в заданном падеже и числе; null, если формы нет.
   String? form(GramCase c, GramNumber n) {
