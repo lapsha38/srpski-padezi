@@ -77,6 +77,8 @@ jobs:
   android:
     name: Android APK
     needs: check
+    # Only a release needs the APK: on a push there is nowhere to publish it.
+    if: github.event_name == 'release'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -101,10 +103,9 @@ jobs:
           path: build/app/outputs/flutter-apk/app-release.apk
           if-no-files-found: error
 
-      # On a published release the APK is attached to it, so it can be
-      # downloaded straight to a phone.
+      # The APK is attached to the release, so it can be downloaded straight
+      # to a phone.
       - name: Attach APK to the release
-        if: github.event_name == 'release'
         uses: softprops/action-gh-release@v3
         with:
           files: build/app/outputs/flutter-apk/app-release.apk
@@ -112,6 +113,9 @@ jobs:
   web:
     name: Web build
     needs: check
+    # The web version is published from a push by the pages job, so a
+    # release does not need this build.
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
