@@ -247,6 +247,38 @@ void main() {
       }
     });
 
+    testWidgets('на вебе всё приложение выделяется без ошибок', (
+      tester,
+    ) async {
+      // SelectionArea требует предка Overlay. Если поставить её выше
+      // навигатора, приложение падает - но только на вебе, поэтому веб-ветку
+      // включаем принудительно и проходим по экранам.
+      SelectableOnWeb.debugForceEnabled = true;
+      addTearDown(() => SelectableOnWeb.debugForceEnabled = false);
+
+      await tester.pumpWidget(const SrpskiPadeziApp());
+      await tester.pumpAndSettle();
+      expect(find.byType(SelectionArea), findsWidgets);
+
+      await tester.tap(find.text('Nominativ - именительный'));
+      await tester.pumpAndSettle();
+      await tester.scrollUntilVisible(
+        find.text('Единственное число'),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.ensureVisible(find.text('Единственное число'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Единственное число'));
+      await tester.pumpAndSettle();
+      expect(find.textContaining('Вопрос 1 из'), findsOneWidget);
+
+      // Правило открывается отдельным маршрутом - там своя обёртка.
+      await tester.tap(find.text('Правило'));
+      await tester.pumpAndSettle();
+      expect(find.byType(BottomSheet), findsOneWidget);
+    });
+
     testWidgets('на вебе текст можно выделить', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(

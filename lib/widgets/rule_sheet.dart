@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:srpski_padezi/data/adjectives.dart';
 import 'package:srpski_padezi/data/cases.dart';
 import 'package:srpski_padezi/models/models.dart';
+import 'package:srpski_padezi/widgets/selectable_on_web.dart';
 
 /// Показывает правило, по которому строится ответ, не прерывая тренировку.
 Future<void> showRuleSheet(BuildContext context, RuleRef rule) {
@@ -13,8 +14,9 @@ Future<void> showRuleSheet(BuildContext context, RuleRef rule) {
       expand: false,
       initialChildSize: 0.75,
       maxChildSize: 0.95,
-      builder: (context, controller) =>
-          _RuleContent(rule: rule, controller: controller),
+      builder: (context, controller) => SelectableOnWeb(
+        child: _RuleContent(rule: rule, controller: controller),
+      ),
     ),
   );
 }

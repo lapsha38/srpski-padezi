@@ -14,6 +14,13 @@ class SelectableOnWeb extends StatelessWidget {
     super.key,
   });
 
+  /// Включает выделение во всём приложении в тестах.
+  ///
+  /// В тестах [kIsWeb] всегда false, поэтому иначе веб-ветка не проверялась
+  /// бы вовсе - а именно в ней [SelectionArea] может не найти [Overlay].
+  @visibleForTesting
+  static bool debugForceEnabled = false;
+
   final Widget child;
 
   /// Включено ли выделение; отдельный параметр нужен для тестов.
@@ -21,5 +28,5 @@ class SelectableOnWeb extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) =>
-      enabled ? SelectionArea(child: child) : child;
+      enabled || debugForceEnabled ? SelectionArea(child: child) : child;
 }
