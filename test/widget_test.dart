@@ -193,6 +193,33 @@ void main() {
       );
     });
 
+    testWidgets('метки рода покрашены в разные цвета', (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: Row(
+              children: [
+                GenderChip(Gender.masculine),
+                GenderChip(Gender.feminine),
+                GenderChip(Gender.neuter),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      final chips = tester.widgetList<Chip>(find.byType(Chip)).toList();
+      expect(chips.length, 3);
+      final backgrounds = chips.map((c) => c.backgroundColor).toSet();
+      expect(backgrounds.length, 3);
+      for (final (index, gender) in Gender.values.indexed) {
+        expect(
+          chips[index].backgroundColor,
+          genderBadgeColors(gender, Brightness.light).background,
+        );
+      }
+    });
+
     testWidgets('таблица склонения заполняется выбором формы', (tester) async {
       await tester.pumpWidget(const SrpskiPadeziApp());
       await tester.pumpAndSettle();

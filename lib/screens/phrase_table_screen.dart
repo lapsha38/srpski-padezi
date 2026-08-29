@@ -160,10 +160,7 @@ class _PhraseCard extends StatelessWidget {
               runSpacing: 8,
               children: [
                 NumberChip(table.number, label: table.number.ru),
-                Chip(
-                  label: Text(noun.gender.ru),
-                  visualDensity: VisualDensity.compact,
-                ),
+                GenderChip(noun.gender),
                 Chip(
                   label: Text(noun.declension.ru),
                   visualDensity: VisualDensity.compact,

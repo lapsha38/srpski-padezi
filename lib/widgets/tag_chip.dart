@@ -20,6 +20,28 @@ import 'package:srpski_padezi/models/models.dart';
   };
 }
 
+/// Цвета метки рода: род виден по цвету раньше, чем прочитан текст.
+({Color background, Color foreground}) genderBadgeColors(
+  Gender gender,
+  Brightness brightness,
+) {
+  final dark = brightness == Brightness.dark;
+  return switch (gender) {
+    Gender.masculine =>
+      dark
+          ? (background: Colors.blue.shade300, foreground: Colors.black87)
+          : (background: Colors.blue.shade700, foreground: Colors.white),
+    Gender.feminine =>
+      dark
+          ? (background: Colors.pink.shade200, foreground: Colors.black87)
+          : (background: Colors.pink.shade600, foreground: Colors.white),
+    Gender.neuter =>
+      dark
+          ? (background: Colors.deepPurple.shade200, foreground: Colors.black87)
+          : (background: Colors.deepPurple.shade400, foreground: Colors.white),
+  };
+}
+
 /// Цветная метка числа.
 class NumberChip extends StatelessWidget {
   const NumberChip(this.number, {this.label, super.key});
@@ -30,19 +52,26 @@ class NumberChip extends StatelessWidget {
   final String? label;
 
   @override
-  Widget build(BuildContext context) {
-    final colors = numberBadgeColors(number, Theme.of(context).brightness);
-    return Chip(
-      label: Text(label ?? number.ruShort),
-      backgroundColor: colors.background,
-      labelStyle: Theme.of(context).textTheme.labelLarge?.copyWith(
-        color: colors.foreground,
-        fontWeight: FontWeight.w600,
-      ),
-      side: BorderSide.none,
-      visualDensity: VisualDensity.compact,
-    );
-  }
+  Widget build(BuildContext context) => _ColoredChip(
+    label: label ?? number.ruShort,
+    colors: numberBadgeColors(number, Theme.of(context).brightness),
+  );
+}
+
+/// Цветная метка рода.
+class GenderChip extends StatelessWidget {
+  const GenderChip(this.gender, {this.label, super.key});
+
+  final Gender gender;
+
+  /// Текст метки; по умолчанию - название рода.
+  final String? label;
+
+  @override
+  Widget build(BuildContext context) => _ColoredChip(
+    label: label ?? gender.ru,
+    colors: genderBadgeColors(gender, Theme.of(context).brightness),
+  );
 }
 
 /// Метка задания: число выделяется цветом, остальные метки нейтральны.
@@ -57,4 +86,23 @@ class TagChip extends StatelessWidget {
     if (number != null) return NumberChip(number);
     return Chip(label: Text(tag), visualDensity: VisualDensity.compact);
   }
+}
+
+class _ColoredChip extends StatelessWidget {
+  const _ColoredChip({required this.label, required this.colors});
+
+  final String label;
+  final ({Color background, Color foreground}) colors;
+
+  @override
+  Widget build(BuildContext context) => Chip(
+    label: Text(label),
+    backgroundColor: colors.background,
+    labelStyle: Theme.of(context).textTheme.labelLarge?.copyWith(
+      color: colors.foreground,
+      fontWeight: FontWeight.w600,
+    ),
+    side: BorderSide.none,
+    visualDensity: VisualDensity.compact,
+  );
 }
