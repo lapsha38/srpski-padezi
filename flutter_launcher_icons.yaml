@@ -1,7 +1,7 @@
 # Иконки приложения генерируются из assets/icon командой
 # dart run flutter_launcher_icons
 flutter_launcher_icons:
-  # iOS и веб: скруглённый квадрат, портрет крупнее.
+  # iOS: скруглённый квадрат, портрет крупнее.
   image_path: "assets/icon/app_icon.png"
   # Android обрезает иконку по круглой маске, поэтому здесь больше полей.
   image_path_android: "assets/icon/app_icon_android.png"
@@ -19,7 +19,7 @@ flutter_launcher_icons:
   # iOS не допускает прозрачности в иконке.
   remove_alpha_ios: true
 
+  # Веб-иконки собирает tool/web_icons.py: пакет кладёт портрет с полями,
+  # а на плитке PWA они видны как белые полосы.
   web:
-    generate: true
-    background_color: "#FFFFFF"
-    theme_color: "#FFFFFF"
+    generate: false
