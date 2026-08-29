@@ -130,9 +130,10 @@ jobs:
           cache: true
       - run: flutter pub get
       # Pages serves the site from a subdirectory, so the base href has to
-      # match the repository name.
+      # match the repository name. `--wasm` also emits the JS build, and the
+      # bootstrap picks whichever the browser supports.
       - name: Build web version
-        run: flutter build web --release --base-href /srpski-padezi/
+        run: flutter build web --release --wasm --base-href /srpski-padezi/
       - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v5
         with:
