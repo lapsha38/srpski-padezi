@@ -111,33 +111,78 @@ jobs:
           files: build/app/outputs/flutter-apk/app-release.apk
 
   pages:
-    name: Publish web version to GitHub Pages
+    name: Redirect GitHub Pages to custom domain
     needs: check
-    # Deploys from main: the site always matches the latest commit.
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
+
     permissions:
       pages: write
       id-token: write
+
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+
     steps:
       - uses: actions/checkout@v7
-      - uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          cache: true
-      - run: flutter pub get
-      # Pages serves the site from a subdirectory, so the base href has to
-      # match the repository name. `--wasm` also emits the JS build, and the
-      # bootstrap picks whichever the browser supports.
-      - name: Build web version
-        run: flutter build web --release --wasm --base-href /srpski-padezi/
+
+      - name: Create redirect page
+        run: |
+          mkdir -p public
+
+          cat > public/index.html <<'EOF'
+          <!doctype html>
+          <html lang="en">
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+
+            <title>Redirecting...</title>
+
+            <meta
+              http-equiv="refresh"
+              content="0; url=https://srpskipadezi.link/"
+            >
+
+            <link
+              rel="canonical"
+              href="https://srpskipadezi.link/"
+            >
+          </head>
+
+          <body>
+            <script>
+              const path = window.location.pathname
+                .replace(/^\/srpski-padezi(?=\/|$)/, '');
+
+              const target =
+                'https://srpskipadezi.link' +
+                (path || '/') +
+                window.location.search +
+                window.location.hash;
+
+              window.location.replace(target);
+            </script>
+
+            <p>
+              Redirecting to
+              <a href="https://srpskipadezi.link/">
+                srpskipadezi.link
+              </a>
+            </p>
+          </body>
+          </html>
+          EOF
+
+          cp public/index.html public/404.html
+
       - uses: actions/configure-pages@v6
+
       - uses: actions/upload-pages-artifact@v5
         with:
-          path: build/web
+          path: public
+
       - id: deployment
         uses: actions/deploy-pages@v5
 
