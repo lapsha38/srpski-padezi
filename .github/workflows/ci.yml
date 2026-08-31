@@ -140,3 +140,29 @@ jobs:
           path: build/web
       - id: deployment
         uses: actions/deploy-pages@v5
+
+  cloudflare:
+    name: Publish web version to Cloudflare
+    needs: check
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+
+      - name: Build web version for Cloudflare
+        run: flutter build web --release --wasm
+
+      - name: Deploy to Cloudflare
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
