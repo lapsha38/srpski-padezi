@@ -6,7 +6,7 @@ import 'package:srpski_padezi/theme.dart';
 
 /// Список грамматических тем вне падежей и числительных.
 class GrammarScreen extends StatelessWidget {
-  const GrammarScreen({super.key});
+  const new({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +46,7 @@ class GrammarScreen extends StatelessWidget {
 }
 
 class _TopicTile extends StatelessWidget {
-  const _TopicTile({required this.topic});
+  const new({required this.topic});
 
   final GrammarTopic topic;
 

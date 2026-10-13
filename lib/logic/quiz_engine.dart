@@ -28,7 +28,7 @@ extension NumberModeX on NumberMode {
 /// Вопросы строятся функцией, а не списком, чтобы кнопка «Пройти ещё раз»
 /// давала новый набор заданий.
 class QuizSession {
-  const QuizSession({
+  const new({
     required this.title,
     required this.build,
     this.progressKey,
@@ -52,7 +52,7 @@ class QuizSession {
 /// Следующий шаг урока. Тренировка задаётся функцией: иначе цепочка
 /// построила бы сразу все свои продолжения.
 class NextStep {
-  const NextStep({required this.label, required this.build});
+  const new({required this.label, required this.build});
 
   final String label;
   final QuizSession Function() build;
@@ -72,7 +72,7 @@ extension PracticeModeX on PracticeMode {
 
 /// Настройки падежной тренировки.
 class QuizConfig {
-  const QuizConfig({
+  const new({
     required this.cases,
     required this.numberMode,
     this.practiceMode = PracticeMode.nouns,
@@ -88,7 +88,7 @@ class QuizConfig {
 /// Генератор падежных вопросов: собирает задания из словаря и контекстных
 /// предложений и подбирает к ним правдоподобные неверные варианты.
 class QuizGenerator {
-  QuizGenerator([Random? random]) : _random = random ?? Random();
+  new([Random? random]) : _random = random ?? Random();
 
   final Random _random;
 
@@ -102,8 +102,9 @@ class QuizGenerator {
 
     for (final gramCase in config.cases) {
       for (final number in config.numberMode.numbers) {
-        // Контекстные задания.
+        // Контекстные задания на одно существительное.
         for (final task in sentencesFor(gramCase)) {
+          if (config.practiceMode == PracticeMode.phrases) break;
           if (task.number != number) continue;
           final noun = kNounsByLemma[task.lemma];
           if (noun == null) continue;
@@ -234,7 +235,7 @@ class QuizGenerator {
         (_, true) => 'Вставьте слово со значением «${noun.ru}» в нужной форме.',
       },
       answer: answer,
-      options: _buildOptions(noun, number, answer),
+      options: nounOptions(noun, number, answer, _random),
       subject: task != null
           ? null
           : answerIsLemma
@@ -316,12 +317,11 @@ class QuizGenerator {
       GramNumber.singular,
     )!;
     final answer = phraseForm(adjective, noun, gramCase, number)!;
-    final options = phraseOptions(
+    final parts = phraseParts(
       adjective: adjective,
       noun: noun,
       gramCase: gramCase,
       number: number,
-      answer: answer,
       random: _random,
     );
 
@@ -346,7 +346,8 @@ class QuizGenerator {
         (_, true) => 'Вставьте «${adjective.ru} + ${noun.ru}» в нужной форме.',
       },
       answer: answer,
-      options: options,
+      options: const [],
+      parts: parts,
       subject: task != null
           ? null
           : answer == dictionaryPair
@@ -371,72 +372,6 @@ class QuizGenerator {
           '(${gramCase.sr}, ${number.ruShort})',
       rule: RuleRef(gramCase: gramCase),
     );
-  }
-
-  /// Четыре варианта: правильный плюс три правдоподобных.
-  ///
-  /// Сначала берутся другие падежные формы того же слова в том же числе -
-  /// именно их и путают на практике; затем формы другого числа; в последнюю
-  /// очередь - искусственные формы с чужими окончаниями.
-  List<String> _buildOptions(Noun noun, GramNumber number, String answer) {
-    final options = <String>{answer};
-    final other = number == GramNumber.singular
-        ? GramNumber.plural
-        : GramNumber.singular;
-
-    void addFrom(Iterable<String> source) {
-      final candidates = source.where((f) => !options.contains(f)).toList()
-        ..shuffle(_random);
-      for (final c in candidates) {
-        if (options.length >= 4) return;
-        options.add(c);
-      }
-    }
-
-    addFrom(noun.forms(number));
-    if (options.length < 4) addFrom(noun.forms(other));
-    if (options.length < 4) addFrom(_syntheticForms(noun));
-    if (options.length < 4) {
-      // Крайний случай: формы других слов того же склонения.
-      addFrom(
-        kNouns
-            .where((n) => n.declension == noun.declension && n != noun)
-            .expand((n) => n.forms(number)),
-      );
-    }
-
-    return options.toList()..shuffle(_random);
-  }
-
-  /// Искусственные формы: основа слова с чужими окончаниями.
-  ///
-  /// Такие варианты имитируют типичную ошибку - окончание из другого
-  /// склонения, - поэтому выглядят правдоподобно.
-  List<String> _syntheticForms(Noun noun) {
-    final stem = switch (noun.declension) {
-      Declension.feminineA ||
-      Declension.neuter => noun.lemma.substring(0, noun.lemma.length - 1),
-      _ => noun.lemma,
-    };
-    const endings = [
-      'a',
-      'e',
-      'i',
-      'u',
-      'o',
-      'om',
-      'em',
-      'ima',
-      'ama',
-      'ovi',
-      'ove',
-      'ova',
-    ];
-    final real = {...noun.sg, ...?noun.pl};
-    return [
-      for (final e in endings)
-        if (!real.contains('$stem$e')) '$stem$e',
-    ];
   }
 }
 

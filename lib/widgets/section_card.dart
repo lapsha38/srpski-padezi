@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:srpski_padezi/data/nouns.dart';
+import 'package:srpski_padezi/logic/ending_samples.dart';
 import 'package:srpski_padezi/models/models.dart';
 
 /// Карточка-раздел с заголовком и произвольным содержимым.
 class SectionCard extends StatelessWidget {
-  const SectionCard({required this.title, required this.child, super.key});
+  const new({required this.title, required this.child, super.key});
 
   final String title;
   final Widget child;
@@ -31,7 +33,7 @@ class SectionCard extends StatelessWidget {
 
 /// Маркированный список правил.
 class BulletList extends StatelessWidget {
-  const BulletList({required this.items, super.key});
+  const new({required this.items, super.key});
 
   final List<String> items;
 
@@ -63,7 +65,7 @@ class BulletList extends StatelessWidget {
 
 /// Список примеров «сербская фраза - перевод».
 class ExampleList extends StatelessWidget {
-  const ExampleList({required this.examples, super.key});
+  const new({required this.examples, super.key});
 
   final List<Example> examples;
 
@@ -97,7 +99,7 @@ class ExampleList extends StatelessWidget {
 
 /// Таблица форм: тип, единственное число, множественное число.
 class FormsTable extends StatelessWidget {
-  const FormsTable({
+  const new({
     required this.rows,
     super.key,
     this.singularLabel = 'Ед. ч.',
@@ -161,9 +163,128 @@ class FormsTable extends StatelessWidget {
   }
 }
 
+/// Окончания падежа по родам: у каждого рода - единственное и
+/// множественное число рядом, под окончанием - формы слов из словаря
+/// с подсвеченной изменившейся частью.
+class EndingsTable extends StatelessWidget {
+  const new({required this.rows, required this.gramCase, super.key});
+
+  final List<EndingRow> rows;
+  final GramCase gramCase;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (final row in rows) ...[
+          if (row != rows.first) const Divider(height: 24),
+          _EndingBlock(row: row, gramCase: gramCase),
+        ],
+      ],
+    );
+  }
+}
+
+/// Один род: заголовок со словами-примерами и две колонки форм.
+class _EndingBlock extends StatelessWidget {
+  const new({required this.row, required this.gramCase});
+
+  final EndingRow row;
+  final GramCase gramCase;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final words = [
+      for (final lemma in row.lemmas)
+        if (row.adjective == null)
+          '$lemma - ${kNounsByLemma[lemma]!.ru}'
+        else
+          '${row.adjective} $lemma',
+    ];
+
+    Widget column(String ending, GramNumber number) => Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Подпись в каждом блоке: общая шапка у нижних родов уже далеко.
+          Text(
+            number.ru,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+          Text(
+            ending,
+            style: theme.textTheme.titleSmall?.copyWith(
+              color: theme.colorScheme.primary,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          for (final sample in endingSamples(row, gramCase, number))
+            Padding(
+              padding: const EdgeInsets.only(top: 2),
+              child: _SampleText(sample: sample),
+            ),
+        ],
+      ),
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(row.group, style: theme.textTheme.titleSmall),
+        if (words.isNotEmpty)
+          Text(words.join(', '), style: theme.textTheme.bodySmall),
+        const SizedBox(height: 6),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            column(row.singular, GramNumber.singular),
+            const SizedBox(width: 16),
+            column(row.plural, GramNumber.plural),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+/// Форма слова: изменившаяся часть выделена цветом и жирным.
+class _SampleText extends StatelessWidget {
+  const new({required this.sample});
+
+  final FormSample sample;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final base = theme.textTheme.bodyLarge;
+
+    return Text.rich(
+      TextSpan(
+        style: base,
+        children: [
+          for (final segment in sample.segments)
+            TextSpan(
+              text: segment.text,
+              style: segment.changed
+                  ? TextStyle(
+                      color: theme.colorScheme.primary,
+                      fontWeight: FontWeight.w700,
+                    )
+                  : null,
+            ),
+        ],
+      ),
+    );
+  }
+}
+
 /// Раздел теории целиком: текст, правила, таблица и примеры.
 class TopicSectionView extends StatelessWidget {
-  const TopicSectionView({required this.section, super.key});
+  const new({required this.section, super.key});
 
   final TopicSection section;
 

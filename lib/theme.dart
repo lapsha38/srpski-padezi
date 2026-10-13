@@ -5,10 +5,8 @@ import 'package:srpski_padezi/widgets/selectable_on_web.dart';
 class AppTheme {
   static ThemeData light() => ThemeData(useMaterial3: true);
 
-  static ThemeData dark() => ThemeData(
-    useMaterial3: true,
-    brightness: Brightness.dark,
-  );
+  static ThemeData dark() =>
+      ThemeData(useMaterial3: true, brightness: Brightness.dark);
 }
 
 /// Максимальная ширина контента - чтобы в браузере на широком экране
@@ -20,7 +18,7 @@ const double kContentMaxWidth = 720;
 /// Выделение живёт здесь, а не выше: [SelectionArea] нужен предок [Overlay],
 /// который есть только внутри маршрута.
 class ContentWidth extends StatelessWidget {
-  const ContentWidth({required this.child, super.key});
+  const new({required this.child, super.key});
 
   final Widget child;
 

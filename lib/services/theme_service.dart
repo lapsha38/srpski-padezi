@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 /// Выбранная тема; по умолчанию системная, ручной выбор сохраняется.
 class ThemeService extends ChangeNotifier {
-  ThemeService._();
+  new _();
 
   static final ThemeService instance = ThemeService._();
 
@@ -25,9 +25,8 @@ class ThemeService extends ChangeNotifier {
 
   /// Переключает тему; при системной теме отсчёт идёт от текущей яркости,
   /// а не от [mode].
-  Future<void> toggle(Brightness current) => setMode(
-    current == Brightness.dark ? ThemeMode.light : ThemeMode.dark,
-  );
+  Future<void> toggle(Brightness current) =>
+      setMode(current == Brightness.dark ? ThemeMode.light : ThemeMode.dark);
 
   Future<void> setMode(ThemeMode mode) async {
     if (mode == _mode) return;

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:srpski_padezi/data/adjectives.dart';
 import 'package:srpski_padezi/data/cases.dart';
-import 'package:srpski_padezi/data/nouns.dart';
 import 'package:srpski_padezi/logic/quiz_engine.dart';
 import 'package:srpski_padezi/models/models.dart';
 import 'package:srpski_padezi/screens/quiz_screen.dart';
@@ -10,7 +10,7 @@ import 'package:srpski_padezi/widgets/section_card.dart';
 
 /// Экран теории по одному падежу и запуск тренировок.
 class CaseScreen extends StatelessWidget {
-  const CaseScreen({required this.gramCase, super.key});
+  const new({required this.gramCase, super.key});
 
   final GramCase gramCase;
 
@@ -57,12 +57,15 @@ class CaseScreen extends StatelessWidget {
                 ),
               ),
             SectionCard(
-              title: 'Окончания',
-              child: FormsTable(rows: info.endings),
+              title: 'Окончания существительных',
+              child: EndingsTable(rows: info.endings, gramCase: gramCase),
             ),
             SectionCard(
-              title: 'Примеры склонения',
-              child: _DeclensionSamples(gramCase: gramCase),
+              title: 'Окончания прилагательных',
+              child: EndingsTable(
+                rows: adjectiveEndingRows(gramCase),
+                gramCase: gramCase,
+              ),
             ),
             SectionCard(
               title: 'Примеры',
@@ -87,7 +90,7 @@ class CaseScreen extends StatelessWidget {
 
 /// Кнопки запуска тренировок и напоминание о пороге прохождения.
 class _TrainingButtons extends StatelessWidget {
-  const _TrainingButtons({required this.gramCase});
+  const new({required this.gramCase});
 
   final GramCase gramCase;
 
@@ -175,68 +178,6 @@ class _TrainingButtons extends StatelessWidget {
           session: QuizPresets.forCase(gramCase, mode, practice: practice),
         ),
       ),
-    );
-  }
-}
-
-/// Показывает форму падежа у нескольких слов разных склонений.
-class _DeclensionSamples extends StatelessWidget {
-  const _DeclensionSamples({required this.gramCase});
-
-  final GramCase gramCase;
-
-  static const List<String> _lemmas = [
-    'grad',
-    'student',
-    'žena',
-    'noć',
-    'selo',
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        for (final lemma in _lemmas)
-          Builder(
-            builder: (context) {
-              final noun = kNounsByLemma[lemma]!;
-              final sg = noun.form(gramCase, GramNumber.singular) ?? '-';
-              final pl = noun.form(gramCase, GramNumber.plural) ?? '-';
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      width: 110,
-                      child: Text(
-                        '${noun.lemma} (${noun.ru})',
-                        style: theme.textTheme.bodySmall,
-                      ),
-                    ),
-                    Expanded(
-                      child: Text(
-                        '$sg  /  $pl',
-                        style: theme.textTheme.bodyLarge?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-        const SizedBox(height: 4),
-        Text(
-          'Слева - единственное число, справа - множественное.',
-          style: theme.textTheme.bodySmall,
-        ),
-      ],
     );
   }
 }

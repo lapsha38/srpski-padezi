@@ -1,29 +1,19 @@
 import 'package:srpski_padezi/models/models.dart';
 
-/// Порядок изучения: от нужного в первых фразах к тому, что можно отложить.
+/// Порядок изучения, как в учебниках сербского для иностранцев: сначала
+/// падежи первых фраз (кто? что? где?), затем генитив и датив, инструментал,
+/// в конце - вокатив.
 ///
 /// Школьная нумерация (N-G-D-A-V-I-L) для этого не годится: второй же падеж
-/// в ней самый трудный. Датив идёт сразу за локативом - формы у них общие.
+/// в ней самый трудный. Этот же порядок - у строк таблицы склонения.
 const List<GramCase> kCaseLearningOrder = [
   GramCase.nominativ,
   GramCase.akuzativ,
   GramCase.lokativ,
-  GramCase.dativ,
-  GramCase.genitiv,
-  GramCase.instrumental,
-  GramCase.vokativ,
-];
-
-/// Порядок строк в таблице склонения: школьный, но локатив поднят к дативу -
-/// формы у них совпадают, и рядом это видно сразу.
-const List<GramCase> kCaseTableOrder = [
-  GramCase.nominativ,
   GramCase.genitiv,
   GramCase.dativ,
-  GramCase.lokativ,
-  GramCase.akuzativ,
-  GramCase.vokativ,
   GramCase.instrumental,
+  GramCase.vokativ,
 ];
 
 /// Номер падежа в маршруте обучения (1-7).
@@ -59,19 +49,21 @@ const List<CaseInfo> kCaseInfos = [
     prepositions: [],
     endings: [
       EndingRow(
-        'м. р. на согласный',
+        'Мужской род',
         '-∅',
         '-i (часто +ov/ev)',
-        example: 'grad → gradovi, prozor → prozori',
+        lemmas: ['grad', 'student'],
       ),
-      EndingRow('ж. р. на -a', '-a', '-e', example: 'žena → žene'),
-      EndingRow('ж. р. на согласный', '-∅', '-i', example: 'noć → noći'),
-      EndingRow('ср. р.', '-o / -e', '-a', example: 'selo → sela, more → mora'),
+      EndingRow('Женский род на -a', '-a', '-e', lemmas: ['žena', 'majka']),
+      EndingRow('Женский род на согласный', '-∅', '-i', lemmas: ['noć']),
+      EndingRow('Средний род', '-o / -e', '-a', lemmas: ['selo', 'more']),
     ],
     examples: [
       Example('Ovo je moj stan.', 'Это моя квартира.'),
       Example('Gradovi su veliki.', 'Города большие.'),
       Example('Moja sestra je profesor.', 'Моя сестра - преподаватель.'),
+      Example('Mlada žena čita knjigu.', 'Молодая женщина читает книгу.'),
+      Example('Stari gradovi su lepi.', 'Старые города красивые.'),
     ],
     russianNote:
         'Совпадает с русским именительным. Главное отличие - конструкция с '
@@ -130,25 +122,31 @@ const List<CaseInfo> kCaseInfos = [
     ],
     endings: [
       EndingRow(
-        'м. р.',
+        'Мужской род',
         '-a',
         '-a (часто +ov/ev, беглое «а»)',
-        example: 'grada → gradova, studenta → studenata',
+        lemmas: ['grad', 'student'],
       ),
       EndingRow(
-        'ж. р. на -a',
+        'Женский род на -a',
         '-e',
         '-a / -i',
-        example: 'žene → žena, majke → majki',
+        lemmas: ['žena', 'majka'],
       ),
-      EndingRow('ж. р. на согласный', '-i', '-i', example: 'noći → noći'),
-      EndingRow('ср. р.', '-a', '-a', example: 'sela → sela, pisma → pisama'),
+      EndingRow('Женский род на согласный', '-i', '-i', lemmas: ['noć']),
+      EndingRow('Средний род', '-a', '-a', lemmas: ['selo', 'pismo']),
     ],
     examples: [
       Example('Dolazim iz Beograda.', 'Я приезжаю из Белграда.'),
       Example('Nema vode u boci.', 'В бутылке нет воды.'),
       Example('Ovo je kuća mojih roditelja.', 'Это дом моих родителей.'),
       Example('Kupio sam pet knjiga.', 'Я купил пять книг.'),
+      Example(
+        'Ovo je kuća mog starog prijatelja.',
+        'Это дом моего старого друга.',
+      ),
+      Example('Nema tople vode.', 'Нет горячей воды.'),
+      Example('Kupio sam pet novih knjiga.', 'Я купил пять новых книг.'),
     ],
     russianNote:
         'Почти полностью совпадает с русским родительным падежом, включая '
@@ -185,21 +183,24 @@ const List<CaseInfo> kCaseInfos = [
     ],
     prepositions: ['k / ka', 'prema', 'nasuprot', 'uprkos'],
     endings: [
-      EndingRow('м. р.', '-u', '-ima', example: 'gradu → gradovima'),
-      EndingRow(
-        'ж. р. на -a',
-        '-i',
-        '-ama',
-        example: 'ženi → ženama, knjizi → knjigama',
-      ),
-      EndingRow('ж. р. на согласный', '-i', '-ima', example: 'noći → noćima'),
-      EndingRow('ср. р.', '-u', '-ima', example: 'selu → selima'),
+      EndingRow('Мужской род', '-u', '-ima', lemmas: ['grad', 'student']),
+      EndingRow('Женский род на -a', '-i', '-ama', lemmas: ['žena', 'knjiga']),
+      EndingRow('Женский род на согласный', '-i', '-ima', lemmas: ['noć']),
+      EndingRow('Средний род', '-u', '-ima', lemmas: ['selo', 'more']),
     ],
     examples: [
       Example('Pišem pismo majci.', 'Пишу письмо матери.'),
       Example('Idemo ka moru.', 'Мы едем к морю.'),
       Example('Deci je dosadno.', 'Детям скучно.'),
       Example('Pomozi prijateljima.', 'Помоги друзьям.'),
+      Example(
+        'Pišem pismo staroj prijateljici.',
+        'Пишу письмо старой подруге.',
+      ),
+      Example(
+        'Dao sam knjigu malom detetu.',
+        'Я дал книгу маленькому ребёнку.',
+      ),
     ],
     russianNote:
         'Совпадает с русским дательным. Ключевое отличие от русского - '
@@ -244,31 +245,34 @@ const List<CaseInfo> kCaseInfos = [
     ],
     endings: [
       EndingRow(
-        'м. р. неодушевлённый',
+        'Мужской род, неодушевлённый',
         '= номинатив (-∅)',
         '-e',
-        example: 'grad → gradove',
+        lemmas: ['grad'],
       ),
       EndingRow(
-        'м. р. одушевлённый',
+        'Мужской род, одушевлённый',
         '= генитив (-a)',
         '-e',
-        example: 'studenta → studente',
+        lemmas: ['student'],
       ),
-      EndingRow('ж. р. на -a', '-u', '-e', example: 'ženu → žene'),
+      EndingRow('Женский род на -a', '-u', '-e', lemmas: ['žena']),
       EndingRow(
-        'ж. р. на согласный',
+        'Женский род на согласный',
         '= номинатив (-∅)',
         '-i',
-        example: 'noć → noći',
+        lemmas: ['noć'],
       ),
-      EndingRow('ср. р.', '= номинатив', '-a', example: 'selo → sela'),
+      EndingRow('Средний род', '= номинатив', '-a', lemmas: ['selo']),
     ],
     examples: [
       Example('Vidim grad.', 'Я вижу город.'),
       Example('Vidim studenta.', 'Я вижу студента.'),
       Example('Idem u kuću.', 'Иду в дом.'),
       Example('Čekam prijatelje.', 'Жду друзей.'),
+      Example('Vidim velikog psa.', 'Я вижу большую собаку.'),
+      Example('Čitam zanimljivu knjigu.', 'Читаю интересную книгу.'),
+      Example('Volim stare gradove.', 'Люблю старые города.'),
     ],
     russianNote:
         'Логика одушевлённости та же, что в русском: у одушевлённых слов '
@@ -307,36 +311,41 @@ const List<CaseInfo> kCaseInfos = [
     prepositions: [],
     endings: [
       EndingRow(
-        'м. р. твёрдая основа',
+        'Мужской род, твёрдая основа',
         '-e',
         '= номинатив',
-        example: 'grad → grade, student → studente',
+        lemmas: ['grad', 'student'],
       ),
       EndingRow(
-        'м. р. мягкая основа (ј, љ, њ, ћ, ђ, ч, ж, ш)',
+        'Мужской род, мягкая основа (j, lj, nj, ć, đ, č, ž, š)',
         '-u',
         '= номинатив',
-        example: 'prijatelj → prijatelju, muž → mužu',
+        lemmas: ['prijatelj', 'muž'],
       ),
       EndingRow(
-        'ж. р. на -a',
+        'Женский род на -a',
         '-o (у слов на -ica → -e)',
         '= номинатив',
-        example: 'žena → ženo, ulica → ulice',
+        lemmas: ['žena', 'ulica'],
       ),
       EndingRow(
-        'ж. р. на согласный',
+        'Женский род на согласный',
         '-i',
         '= номинатив',
-        example: 'noć → noći',
+        lemmas: ['noć'],
       ),
-      EndingRow('ср. р.', '= номинатив', '= номинатив', example: 'selo → selo'),
+      EndingRow('Средний род', '= номинатив', '= номинатив', lemmas: ['selo']),
     ],
     examples: [
       Example('Prijatelju, hvala ti!', 'Друг, спасибо тебе!'),
       Example('Ženo, gde si bila?', 'Женщина, где ты была?'),
       Example('Dobro jutro, profesore!', 'Доброе утро, преподаватель!'),
       Example('Sine, dođi ovamo.', 'Сын, иди сюда.'),
+      Example(
+        'Dragi prijatelju, dobro došao!',
+        'Дорогой друг, добро пожаловать!',
+      ),
+      Example('Poštovani gosti, izvolite!', 'Уважаемые гости, проходите!'),
     ],
     russianNote:
         'В русском аналога нет, поэтому его чаще всего забывают: русскоязычные '
@@ -372,46 +381,39 @@ const List<CaseInfo> kCaseInfos = [
           'Sedim za stolom.',
       'Время: Nedeljom idem na pijacu. - По воскресеньям хожу на рынок.',
     ],
-    prepositions: [
-      's / sa (вместе с)',
-      'pod',
-      'nad',
-      'pred',
-      'za',
-      'među',
-    ],
+    prepositions: ['s / sa (вместе с)', 'pod', 'nad', 'pred', 'za', 'među'],
     endings: [
       EndingRow(
-        'м. р. твёрдая основа',
+        'Мужской род, твёрдая основа',
         '-om',
         '-ima',
-        example: 'gradom → gradovima',
+        lemmas: ['grad', 'student'],
       ),
       EndingRow(
-        'м. р. мягкая основа',
+        'Мужской род, мягкая основа',
         '-em',
         '-ima',
-        example: 'nožem → noževima',
+        lemmas: ['nož', 'prijatelj'],
       ),
-      EndingRow('ж. р. на -a', '-om', '-ama', example: 'ženom → ženama'),
+      EndingRow('Женский род на -a', '-om', '-ama', lemmas: ['žena']),
       EndingRow(
-        'ж. р. на согласный',
+        'Женский род на согласный',
         '-ju (реже -i)',
         '-ima',
-        example: 'noću, rečju → noćima',
+        lemmas: ['noć', 'reč'],
       ),
-      EndingRow(
-        'ср. р.',
-        '-om / -em',
-        '-ima',
-        example: 'selom, morem → selima',
-      ),
+      EndingRow('Средний род', '-om / -em', '-ima', lemmas: ['selo', 'more']),
     ],
     examples: [
       Example('Idem u grad autobusom.', 'Еду в город автобусом.'),
       Example('Živim sa sestrom.', 'Живу с сестрой.'),
       Example('Knjiga je pod stolom.', 'Книга под столом.'),
       Example('Pišem olovkom.', 'Пишу карандашом.'),
+      Example('Putujem novim autobusom.', 'Еду на новом автобусе.'),
+      Example(
+        'Razgovaram sa starim prijateljem.',
+        'Разговариваю со старым другом.',
+      ),
     ],
     russianNote:
         'Отличие от русского только одно, но важное: русский «с» перед орудием '
@@ -446,26 +448,18 @@ const List<CaseInfo> kCaseInfos = [
     ],
     prepositions: ['u (где)', 'na (где)', 'o', 'po', 'pri', 'prema (о месте)'],
     endings: [
-      EndingRow('м. р.', '-u', '-ima', example: 'u gradu → u gradovima'),
-      EndingRow(
-        'ж. р. на -a',
-        '-i',
-        '-ama',
-        example: 'u školi, u knjizi → u školama',
-      ),
-      EndingRow(
-        'ж. р. на согласный',
-        '-i',
-        '-ima',
-        example: 'u noći → u noćima',
-      ),
-      EndingRow('ср. р.', '-u', '-ima', example: 'u selu → u selima'),
+      EndingRow('Мужской род', '-u', '-ima', lemmas: ['grad', 'student']),
+      EndingRow('Женский род на -a', '-i', '-ama', lemmas: ['škola', 'knjiga']),
+      EndingRow('Женский род на согласный', '-i', '-ima', lemmas: ['noć']),
+      EndingRow('Средний род', '-u', '-ima', lemmas: ['selo']),
     ],
     examples: [
       Example('Živim u Beogradu.', 'Я живу в Белграде.'),
       Example('Knjiga je na stolu.', 'Книга на столе.'),
       Example('Pričamo o ljubavi.', 'Мы говорим о любви.'),
       Example('Deca su u školama.', 'Дети в школах.'),
+      Example('Živim u malom gradu.', 'Я живу в маленьком городе.'),
+      Example('Pričamo o novoj knjizi.', 'Мы говорим о новой книге.'),
     ],
     russianNote:
         'Аналог русского предложного падежа, и логика та же: только с '

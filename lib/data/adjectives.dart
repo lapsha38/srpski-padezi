@@ -1,10 +1,9 @@
-import 'package:srpski_padezi/data/nouns.dart';
 import 'package:srpski_padezi/models/models.dart';
 
 /// Прилагательное задаётся основой: все формы определённого вида
 /// образуются от неё регулярно, поэтому таблицу можно не хранить.
 class Adjective {
-  const Adjective(this.lemma, this.ru, this.stem, {this.note});
+  const new(this.lemma, this.ru, this.stem, {this.note});
 
   /// Словарная форма (мужской род, неопределённый вид): lep, dobar.
   final String lemma;
@@ -325,7 +324,7 @@ String? phraseForm(
 }
 
 /// Строки таблицы окончаний прилагательного для одного падежа -
-/// используются в правиле, которое можно открыть прямо в тренировке.
+/// в теории падежа и в правиле, которое открывается прямо в тренировке.
 List<EndingRow> adjectiveEndingRows(GramCase gramCase) {
   String ending(Gender gender, GramNumber number) =>
       '-'
@@ -338,42 +337,28 @@ List<EndingRow> adjectiveEndingRows(GramCase gramCase) {
       ? ' (у одушевлённых -og: vidim lepog konja)'
       : '';
 
-  /// Пример «прилагательное + существительное» в этой же форме.
-  String example(String lemma, Gender gender, GramNumber number) {
-    final noun = kNounsByLemma[lemma]!;
-    final adjective = adjectiveForm(
-      kAdjectives.first,
-      gender: gender,
-      gramCase: gramCase,
-      number: number,
-    );
-    return '$adjective ${noun.form(gramCase, number)}';
-  }
-
+  final adjective = kAdjectives.first.lemma;
   return [
     EndingRow(
-      'м. р.',
+      'Мужской род',
       '${sg(Gender.masculine)}$animateNote',
       pl(Gender.masculine),
-      example:
-          '${example('grad', Gender.masculine, GramNumber.singular)} / '
-          '${example('grad', Gender.masculine, GramNumber.plural)}',
+      lemmas: const ['grad'],
+      adjective: adjective,
     ),
     EndingRow(
-      'ж. р.',
+      'Женский род',
       sg(Gender.feminine),
       pl(Gender.feminine),
-      example:
-          '${example('žena', Gender.feminine, GramNumber.singular)} / '
-          '${example('žena', Gender.feminine, GramNumber.plural)}',
+      lemmas: const ['žena'],
+      adjective: adjective,
     ),
     EndingRow(
-      'ср. р.',
+      'Средний род',
       sg(Gender.neuter),
       pl(Gender.neuter),
-      example:
-          '${example('selo', Gender.neuter, GramNumber.singular)} / '
-          '${example('selo', Gender.neuter, GramNumber.plural)}',
+      lemmas: const ['selo'],
+      adjective: adjective,
     ),
   ];
 }

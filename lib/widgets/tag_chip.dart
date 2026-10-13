@@ -44,7 +44,7 @@ import 'package:srpski_padezi/models/models.dart';
 
 /// Цветная метка числа.
 class NumberChip extends StatelessWidget {
-  const NumberChip(this.number, {this.label, super.key});
+  const new(this.number, {this.label, super.key});
 
   final GramNumber number;
 
@@ -60,7 +60,7 @@ class NumberChip extends StatelessWidget {
 
 /// Цветная метка рода.
 class GenderChip extends StatelessWidget {
-  const GenderChip(this.gender, {this.label, super.key});
+  const new(this.gender, {this.label, super.key});
 
   final Gender gender;
 
@@ -76,7 +76,7 @@ class GenderChip extends StatelessWidget {
 
 /// Метка задания: число выделяется цветом, остальные метки нейтральны.
 class TagChip extends StatelessWidget {
-  const TagChip(this.tag, {super.key});
+  const new(this.tag, {super.key});
 
   final String tag;
 
@@ -89,7 +89,7 @@ class TagChip extends StatelessWidget {
 }
 
 class _ColoredChip extends StatelessWidget {
-  const _ColoredChip({required this.label, required this.colors});
+  const new({required this.label, required this.colors});
 
   final String label;
   final ({Color background, Color foreground}) colors;
@@ -98,10 +98,8 @@ class _ColoredChip extends StatelessWidget {
   Widget build(BuildContext context) => Chip(
     label: Text(label),
     backgroundColor: colors.background,
-    labelStyle: Theme.of(context).textTheme.labelLarge?.copyWith(
-      color: colors.foreground,
-      fontWeight: FontWeight.w600,
-    ),
+    labelStyle: Theme.of(context).textTheme.labelLarge
+        ?.copyWith(color: colors.foreground, fontWeight: FontWeight.w600),
     side: BorderSide.none,
     visualDensity: VisualDensity.compact,
   );

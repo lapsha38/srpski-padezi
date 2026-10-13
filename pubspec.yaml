@@ -29,7 +29,7 @@ environment:
 # versions available, run `flutter pub outdated`.
 dependencies:
   # Иконки в стиле iOS.
-  cupertino_icons: ^1.0.8
+  cupertino_icons: ^2.0.0
   flutter:
     sdk: flutter
   # Хранение прогресса между запусками.
@@ -40,7 +40,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   # Строгий набор правил анализа, см. analysis_options.yaml.
-  very_good_analysis: ^10.3.0
+  very_good_analysis: ^11.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

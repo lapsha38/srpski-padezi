@@ -1,6 +1,6 @@
 /// Прилагательное в трёх степенях сравнения.
 class ComparisonEntry {
-  const ComparisonEntry(
+  const new(
     this.positive,
     this.comparative,
     this.superlative,
@@ -63,10 +63,5 @@ const List<ComparisonEntry> kComparisons = [
   ComparisonEntry('topao', 'topliji', 'najtopliji', 'тёплый'),
   ComparisonEntry('hladan', 'hladniji', 'najhladniji', 'холодный'),
   ComparisonEntry('pametan', 'pametniji', 'najpametniji', 'умный'),
-  ComparisonEntry(
-    'zanimljiv',
-    'zanimljiviji',
-    'najzanimljiviji',
-    'интересный',
-  ),
+  ComparisonEntry('zanimljiv', 'zanimljiviji', 'najzanimljiviji', 'интересный'),
 ];

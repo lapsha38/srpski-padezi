@@ -45,9 +45,6 @@ extension GramCaseInfoX on GramCase {
     GramCase.instrumental => 's kim? čim?',
     GramCase.lokativ => 'o kome? o čemu? gde?',
   };
-
-  /// Номер падежа в сербской нумерации (1-7).
-  int get order => index + 1;
 }
 
 /// Грамматическое число.
@@ -106,7 +103,7 @@ extension DeclensionX on Declension {
 
 /// Существительное со всеми падежными формами.
 class Noun {
-  const Noun({
+  const new({
     required this.lemma,
     required this.ru,
     required this.gender,
@@ -161,23 +158,39 @@ class Noun {
 
 /// Строка таблицы окончаний в теории.
 class EndingRow {
-  const EndingRow(this.group, this.singular, this.plural, {this.example});
+  const new(
+    this.group,
+    this.singular,
+    this.plural, {
+    this.example,
+    this.lemmas = const [],
+    this.adjective,
+  });
   final String group;
   final String singular;
   final String plural;
+
+  /// Пример текстом - там, где форм нет в словаре (глаголы, местоимения).
   final String? example;
+
+  /// Существительные из словаря, на которых показываются формы падежа:
+  /// так таблица теории не может разойтись со словарём.
+  final List<String> lemmas;
+
+  /// Прилагательное к [lemmas], если строка - про словосочетание.
+  final String? adjective;
 }
 
 /// Пример «сербская фраза - перевод».
 class Example {
-  const Example(this.sr, this.ru);
+  const new(this.sr, this.ru);
   final String sr;
   final String ru;
 }
 
 /// Теоретическая карточка одного падежа.
 class CaseInfo {
-  const CaseInfo({
+  const new({
     required this.gramCase,
     required this.tagline,
     required this.summary,
@@ -215,7 +228,7 @@ class CaseInfo {
 
 /// Раздел теории: заголовок, объяснение, пункты, примеры и таблица.
 class TopicSection {
-  const TopicSection({
+  const new({
     required this.title,
     required this.body,
     this.bullets = const [],
@@ -234,12 +247,7 @@ class TopicSection {
 
 /// Ссылка на правило, которое можно открыть прямо во время тренировки.
 class RuleRef {
-  const RuleRef({
-    this.gramCase,
-    this.title,
-    this.body,
-    this.bullets = const [],
-  });
+  const new({this.gramCase, this.title, this.body, this.bullets = const []});
 
   /// Падеж, правило которого нужно показать целиком.
   final GramCase? gramCase;
@@ -254,12 +262,29 @@ class RuleRef {
   final List<String> bullets;
 }
 
+/// Часть составного ответа: слово, которое выбирается отдельно,
+/// например прилагательное в словосочетании.
+class AnswerPart {
+  const new({required this.label, required this.answer, required this.options});
+
+  /// Что выбираем: «прилагательное», «существительное».
+  final String label;
+
+  final String answer;
+
+  /// Четыре варианта, включая правильный.
+  final List<String> options;
+}
+
+/// Ответ, собранный из выбранных частей через пробел.
+String joinParts(Iterable<String> parts) => parts.join(' ');
+
 /// Один вопрос теста.
 ///
 /// Модель намеренно не привязана к падежам: так один и тот же экран
 /// тренировки обслуживает и падежи, и числительные.
 class Question {
-  const Question({
+  const new({
     required this.prompt,
     required this.answer,
     required this.options,
@@ -271,6 +296,7 @@ class Question {
     this.hint,
     this.summary,
     this.rule,
+    this.parts = const [],
   });
 
   /// Формулировка задания на русском.
@@ -279,8 +305,13 @@ class Question {
   /// Правильный ответ.
   final String answer;
 
-  /// Четыре варианта ответа, включая правильный.
+  /// Четыре варианта ответа, включая правильный; пусто, если ответ
+  /// собирается из [parts].
   final List<String> options;
+
+  /// Части составного ответа: каждая выбирается отдельно, а [answer] -
+  /// их правильные варианты через пробел.
+  final List<AnswerPart> parts;
 
   /// Крупная строка над заданием: слово или число, о котором идёт речь.
   final String? subject;
@@ -307,11 +338,13 @@ class Question {
   final RuleRef? rule;
 
   bool get isContextual => contextSr != null;
+
+  bool get isComposite => parts.isNotEmpty;
 }
 
 /// Результат ответа на один вопрос - нужен для разбора ошибок.
 class AnswerRecord {
-  const AnswerRecord({
+  const new({
     required this.question,
     required this.given,
     required this.correct,

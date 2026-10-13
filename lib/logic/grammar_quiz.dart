@@ -14,18 +14,11 @@ import 'package:srpski_padezi/models/models.dart';
 const List<String> _personPronouns = ['ja', 'ti', 'on', 'mi', 'vi', 'oni'];
 
 /// Русские подписи лиц.
-const List<String> _personRu = [
-  'я',
-  'ты',
-  'он / она',
-  'мы',
-  'вы',
-  'они',
-];
+const List<String> _personRu = ['я', 'ты', 'он / она', 'мы', 'вы', 'они'];
 
 /// Предложение, в которое подставляется краткая форма местоимения.
 class _PronounSlot {
-  const _PronounSlot(this.template, this.ru, this.gramCase);
+  const new(this.template, this.ru, this.gramCase);
 
   final String template;
   final String ru;
@@ -59,7 +52,7 @@ const List<_PronounSlot> _pronounSlots = [
 
 /// Генератор заданий по грамматике вне падежей и числительных.
 class GrammarQuizGenerator {
-  GrammarQuizGenerator([Random? random]) : _random = random ?? Random();
+  new([Random? random]) : _random = random ?? Random();
 
   final Random _random;
 
@@ -353,16 +346,13 @@ class GrammarQuizGenerator {
           prompt: 'Образуйте сравнительную степень.',
           subject: '${entry.positive} (${entry.ru})',
           answer: entry.comparative,
-          options: _fill(
-            {
-              entry.comparative,
-              entry.superlative,
-              // Правдоподобная ошибка - механическое присоединение -iji.
-              if ('${entry.positive}iji' != entry.comparative)
-                '${entry.positive}iji',
-            },
-            otherComparatives,
-          ),
+          options: _fill({
+            entry.comparative,
+            entry.superlative,
+            // Правдоподобная ошибка - механическое присоединение -iji.
+            if ('${entry.positive}iji' != entry.comparative)
+              '${entry.positive}iji',
+          }, otherComparatives),
           tags: const ['Прилагательные', 'сравнительная степень'],
           hint: entry.irregular
               ? 'Неправильная форма, её нужно запомнить: '
@@ -378,10 +368,10 @@ class GrammarQuizGenerator {
           prompt: 'Образуйте превосходную степень.',
           subject: '${entry.positive} (${entry.ru})',
           answer: entry.superlative,
-          options: _fill(
-            {entry.superlative, entry.comparative},
-            otherSuperlatives,
-          ),
+          options: _fill({
+            entry.superlative,
+            entry.comparative,
+          }, otherSuperlatives),
           tags: const ['Прилагательные', 'превосходная степень'],
           hint:
               'Превосходная степень - это naj- плюс сравнительная: '
@@ -478,10 +468,7 @@ class GrammarQuizGenerator {
           prompt: 'Есть движение, значит нужен винительный падеж.',
           subject: pair.ruMotion,
           answer: phrase(accusative),
-          options: _fill(
-            {phrase(accusative), phrase(locative)},
-            extra,
-          ),
+          options: _fill({phrase(accusative), phrase(locative)}, extra),
           tags: const ['Предлоги', 'куда'],
           hint:
               'Движение отвечает на вопрос «куда?», поэтому '
@@ -493,10 +480,7 @@ class GrammarQuizGenerator {
           prompt: 'Движения нет, значит нужен локатив.',
           subject: pair.ruPlace,
           answer: phrase(locative),
-          options: _fill(
-            {phrase(locative), phrase(accusative)},
-            extra,
-          ),
+          options: _fill({phrase(locative), phrase(accusative)}, extra),
           tags: const ['Предлоги', 'где'],
           hint:
               'Место отвечает на вопрос «где?», поэтому '

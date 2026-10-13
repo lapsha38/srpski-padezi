@@ -3,7 +3,7 @@
 /// Такие задания нужны там, где правило касается целого предложения:
 /// порядок энклитик, конструкция с da, отрицание.
 class ChoiceTask {
-  const ChoiceTask({
+  const new({
     required this.ru,
     required this.correct,
     required this.wrong,

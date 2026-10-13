@@ -6,23 +6,24 @@ import 'package:srpski_padezi/data/nouns.dart';
 import 'package:srpski_padezi/logic/phrase_forms.dart';
 import 'package:srpski_padezi/models/models.dart';
 
-/// Одна строка таблицы: падеж, верная форма и варианты для выбора.
+/// Одна строка таблицы: падеж, верная форма и варианты для выбора -
+/// отдельно для прилагательного и для существительного.
 class PhraseTableRow {
-  const PhraseTableRow({
+  const new({
     required this.gramCase,
     required this.answer,
-    required this.options,
+    required this.parts,
   });
 
   final GramCase gramCase;
   final String answer;
-  final List<String> options;
+  final List<AnswerPart> parts;
 }
 
 /// Словосочетание, разложенное по всем семи падежам: видно всё склонение
 /// целиком, а не по одному вопросу.
 class PhraseTable {
-  const PhraseTable({
+  const new({
     required this.adjective,
     required this.noun,
     required this.number,
@@ -33,7 +34,7 @@ class PhraseTable {
   final Noun noun;
   final GramNumber number;
 
-  /// Семь строк в порядке [kCaseTableOrder].
+  /// Семь строк в порядке [kCaseLearningOrder].
   final List<PhraseTableRow> rows;
 
   /// Обе словарные формы через плюс: готовое словосочетание совпало бы
@@ -49,7 +50,7 @@ class PhraseTable {
 
 /// Собирает таблицу для случайного словосочетания.
 class PhraseTableGenerator {
-  PhraseTableGenerator([Random? random]) : _random = random ?? Random();
+  new([Random? random]) : _random = random ?? Random();
 
   final Random _random;
 
@@ -59,9 +60,7 @@ class PhraseTableGenerator {
   PhraseTable build() {
     final noun = kNouns[_random.nextInt(kNouns.length)];
     final adjective =
-        kCommonAdjectives[_random.nextInt(
-          kCommonAdjectives.length,
-        )];
+        kCommonAdjectives[_random.nextInt(kCommonAdjectives.length)];
     // Множественное число берём только у слов, которые его имеют.
     final number = noun.hasPlural && _random.nextBool()
         ? GramNumber.plural
@@ -72,7 +71,7 @@ class PhraseTableGenerator {
       noun: noun,
       number: number,
       rows: [
-        for (final gramCase in kCaseTableOrder)
+        for (final gramCase in kCaseLearningOrder)
           _row(
             adjective: adjective,
             noun: noun,
@@ -89,16 +88,14 @@ class PhraseTableGenerator {
     required GramCase gramCase,
     required GramNumber number,
   }) {
-    final answer = phraseForm(adjective, noun, gramCase, number)!;
     return PhraseTableRow(
       gramCase: gramCase,
-      answer: answer,
-      options: phraseOptions(
+      answer: phraseForm(adjective, noun, gramCase, number)!,
+      parts: phraseParts(
         adjective: adjective,
         noun: noun,
         gramCase: gramCase,
         number: number,
-        answer: answer,
         random: _random,
       ),
     );

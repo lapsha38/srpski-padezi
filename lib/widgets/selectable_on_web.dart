@@ -4,11 +4,7 @@ import 'package:flutter/material.dart';
 /// Включает выделение текста на вебе: в браузере ждут поведения обычной
 /// страницы, а на телефоне выделение мешает нажатиям.
 class SelectableOnWeb extends StatelessWidget {
-  const SelectableOnWeb({
-    required this.child,
-    this.enabled = kIsWeb,
-    super.key,
-  });
+  const new({required this.child, this.enabled = kIsWeb, super.key});
 
   /// Включает выделение в тестах: [kIsWeb] в них всегда false.
   @visibleForTesting

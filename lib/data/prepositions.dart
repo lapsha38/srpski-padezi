@@ -2,7 +2,7 @@ import 'package:srpski_padezi/models/models.dart';
 
 /// Предлог и падеж, которого он требует.
 class PrepositionEntry {
-  const PrepositionEntry(this.preposition, this.gramCase, this.ru, this.lemma);
+  const new(this.preposition, this.gramCase, this.ru, this.lemma);
 
   final String preposition;
   final GramCase gramCase;
@@ -51,7 +51,7 @@ const List<PrepositionEntry> kPrepositions = [
 /// Это главная ловушка для русскоязычных: предлог тот же, а падеж меняется
 /// в зависимости от того, есть движение или нет.
 class PlacePair {
-  const PlacePair(this.lemma, this.preposition, this.ruMotion, this.ruPlace);
+  const new(this.lemma, this.preposition, this.ruMotion, this.ruPlace);
 
   final String lemma;
 
@@ -70,12 +70,7 @@ const List<PlacePair> kPlacePairs = [
   PlacePair('grad', 'u', 'Я еду в город.', 'Сейчас я в городе.'),
   PlacePair('škola', 'u', 'Я иду в школу.', 'Сейчас я в школе.'),
   PlacePair('restoran', 'u', 'Я иду в ресторан.', 'Сейчас я в ресторане.'),
-  PlacePair(
-    'prodavnica',
-    'u',
-    'Я иду в магазин.',
-    'Сейчас я в магазине.',
-  ),
+  PlacePair('prodavnica', 'u', 'Я иду в магазин.', 'Сейчас я в магазине.'),
   PlacePair('soba', 'u', 'Я иду в комнату.', 'Сейчас я в комнате.'),
   PlacePair('dvorište', 'u', 'Я иду во двор.', 'Сейчас я во дворе.'),
   PlacePair('more', 'na', 'Я еду на море.', 'Сейчас я на море.'),

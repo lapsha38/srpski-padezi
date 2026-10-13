@@ -8,6 +8,7 @@ import 'package:srpski_padezi/data/nouns.dart';
 import 'package:srpski_padezi/data/pronouns.dart';
 import 'package:srpski_padezi/data/sentences.dart';
 import 'package:srpski_padezi/data/verbs.dart';
+import 'package:srpski_padezi/logic/ending_samples.dart';
 import 'package:srpski_padezi/models/models.dart';
 
 void main() {
@@ -72,22 +73,50 @@ void main() {
       expect(kCaseLearningOrder.toSet(), GramCase.values.toSet());
       expect(kCaseLearningOrder.first, GramCase.nominativ);
       expect(kCaseLearningOrder.last, GramCase.vokativ);
-      expect(
-        kCaseLearningOrder.indexOf(GramCase.dativ),
-        kCaseLearningOrder.indexOf(GramCase.lokativ) + 1,
-        reason: 'датив идёт сразу за локативом: формы у них общие',
-      );
+      // Учебниковый порядок: N-A-L, затем G-D-I, вокатив последним.
+      expect(kCaseLearningOrder, const [
+        GramCase.nominativ,
+        GramCase.akuzativ,
+        GramCase.lokativ,
+        GramCase.genitiv,
+        GramCase.dativ,
+        GramCase.instrumental,
+        GramCase.vokativ,
+      ]);
       expect(nextCaseInLearningOrder(GramCase.vokativ), isNull);
       expect(nextCaseInLearningOrder(GramCase.nominativ), GramCase.akuzativ);
       expect(caseLearningStep(GramCase.nominativ), 1);
     });
 
-    test('в таблице склонения локатив стоит сразу за дативом', () {
-      expect(kCaseTableOrder.toSet(), GramCase.values.toSet());
-      expect(
-        kCaseTableOrder.indexOf(GramCase.lokativ),
-        kCaseTableOrder.indexOf(GramCase.dativ) + 1,
-      );
+    test('у каждой строки окончаний есть формы из словаря', () {
+      for (final info in kCaseInfos) {
+        final rows = [...info.endings, ...adjectiveEndingRows(info.gramCase)];
+        for (final row in rows) {
+          final reason = '${info.gramCase.sr}: ${row.group}';
+          expect(row.lemmas, isNotEmpty, reason: reason);
+          for (final lemma in row.lemmas) {
+            expect(kNounsByLemma, contains(lemma), reason: reason);
+          }
+          expect(
+            endingSamples(row, info.gramCase, GramNumber.singular),
+            isNotEmpty,
+            reason: reason,
+          );
+        }
+      }
+    });
+
+    test('в примере подсвечена изменившаяся часть слова', () {
+      String changed(String base, String form) => FormSample(
+        base: base,
+        form: form,
+      ).segments.where((s) => s.changed).map((s) => s.text).join('|');
+
+      expect(changed('grad', 'gradovima'), 'ovima');
+      expect(changed('majka', 'majci'), 'ci');
+      expect(changed('student', 'studenata'), 'ata');
+      expect(changed('grad', 'grad'), '');
+      expect(changed('lep grad', 'lepog grada'), 'og|a');
     });
 
     test('в каждой карточке есть окончания, примеры и разбор ошибок', () {
@@ -133,9 +162,9 @@ void main() {
     test('на каждый падеж и число приходится хотя бы 20 предложений', () {
       for (final c in GramCase.values) {
         for (final number in GramNumber.values) {
-          final tasks = sentencesFor(
-            c,
-          ).where((t) => t.number == number).toList();
+          final tasks = sentencesFor(c)
+              .where((t) => t.number == number)
+              .toList();
           expect(
             tasks.length,
             greaterThanOrEqualTo(20),

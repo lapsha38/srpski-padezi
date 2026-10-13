@@ -37,13 +37,33 @@ void expectAnswerHidden(Question q) {
   }
 }
 
+/// Части составного ответа: по четыре разных варианта в каждой, а вместе
+/// правильные варианты дают ответ целиком.
+void expectPartsWellFormed(
+  List<AnswerPart> parts,
+  String answer, {
+  required String reason,
+}) {
+  expect(parts.length, 2, reason: reason);
+  for (final part in parts) {
+    expect(part.options.length, 4, reason: '$reason / ${part.label}');
+    expect(part.options.toSet().length, 4, reason: '$reason / ${part.label}');
+    expect(part.options, contains(part.answer), reason: reason);
+  }
+  expect(joinParts(parts.map((p) => p.answer)), answer, reason: reason);
+}
+
 /// Общая проверка любого набора вопросов.
 void expectWellFormed(List<Question> questions, {required String reason}) {
   expect(questions, isNotEmpty, reason: reason);
   for (final q in questions) {
-    expect(q.options.length, 4, reason: '$reason: ${q.summary}');
-    expect(q.options.toSet().length, 4, reason: '$reason: ${q.summary}');
-    expect(q.options, contains(q.answer), reason: '$reason: ${q.summary}');
+    if (q.isComposite) {
+      expectPartsWellFormed(q.parts, q.answer, reason: '$reason: ${q.summary}');
+    } else {
+      expect(q.options.length, 4, reason: '$reason: ${q.summary}');
+      expect(q.options.toSet().length, 4, reason: '$reason: ${q.summary}');
+      expect(q.options, contains(q.answer), reason: '$reason: ${q.summary}');
+    }
     expect(q.prompt, isNotEmpty, reason: reason);
     // К любому заданию должно прилагаться правило: его можно открыть
     // прямо во время тренировки.
@@ -69,16 +89,16 @@ void main() {
     test('словосочетания тоже дают корректные варианты', () {
       final generator = QuizGenerator(Random(4));
       for (final c in GramCase.values) {
-        expectWellFormed(
-          generator.generate(
-            QuizConfig(
-              cases: [c],
-              numberMode: NumberMode.mixed,
-              practiceMode: PracticeMode.phrases,
-            ),
+        final questions = generator.generate(
+          QuizConfig(
+            cases: [c],
+            numberMode: NumberMode.mixed,
+            practiceMode: PracticeMode.phrases,
           ),
-          reason: 'словосочетания: ${c.sr}',
         );
+        // Словосочетание всегда собирается из двух выборов.
+        expect(questions.every((q) => q.isComposite), isTrue, reason: c.sr);
+        expectWellFormed(questions, reason: 'словосочетания: ${c.sr}');
       }
     });
 
@@ -300,10 +320,8 @@ void main() {
         expect(table.rows.length, GramCase.values.length);
         for (var i = 0; i < table.rows.length; i++) {
           final row = table.rows[i];
-          expect(row.gramCase, kCaseTableOrder[i]);
-          expect(row.options.length, 4, reason: row.answer);
-          expect(row.options.toSet().length, 4, reason: row.answer);
-          expect(row.options, contains(row.answer));
+          expect(row.gramCase, kCaseLearningOrder[i]);
+          expectPartsWellFormed(row.parts, row.answer, reason: row.answer);
         }
       }
     });

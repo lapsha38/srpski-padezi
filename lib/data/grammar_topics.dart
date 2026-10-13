@@ -57,7 +57,7 @@ extension GrammarDrillX on GrammarDrill {
 
 /// Грамматическая тема: теория плюс тренировки.
 class GrammarTopic {
-  const GrammarTopic({
+  const new({
     required this.title,
     required this.subtitle,
     required this.sections,

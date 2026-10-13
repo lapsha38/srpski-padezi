@@ -70,7 +70,7 @@ const List<int> _agreementNumbers = [
 
 /// Генератор заданий по числительным.
 class NumeralQuizGenerator {
-  NumeralQuizGenerator([Random? random]) : _random = random ?? Random();
+  new([Random? random]) : _random = random ?? Random();
 
   final Random _random;
 

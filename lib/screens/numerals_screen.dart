@@ -8,7 +8,7 @@ import 'package:srpski_padezi/widgets/section_card.dart';
 
 /// Раздел «Числительные»: теория и три тренировки.
 class NumeralsScreen extends StatelessWidget {
-  const NumeralsScreen({super.key});
+  const new({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +45,7 @@ class NumeralsScreen extends StatelessWidget {
 
 /// Таблица «число - количественное - порядковое - собирательное».
 class _NumeralsTable extends StatelessWidget {
-  const _NumeralsTable();
+  const new();
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +85,7 @@ class _NumeralsTable extends StatelessWidget {
 
 /// Кнопки запуска тренировок по числительным.
 class _NumeralTrainings extends StatelessWidget {
-  const _NumeralTrainings();
+  const new();
 
   @override
   Widget build(BuildContext context) {
@@ -115,9 +115,8 @@ class _NumeralTrainings extends StatelessWidget {
                 onPressed: () => Navigator.push(
                   context,
                   MaterialPageRoute<void>(
-                    builder: (_) => QuizScreen(
-                      session: NumeralQuizPresets.forKind(kind),
-                    ),
+                    builder: (_) =>
+                        QuizScreen(session: NumeralQuizPresets.forKind(kind)),
                   ),
                 ),
                 child: const Text('Начать'),

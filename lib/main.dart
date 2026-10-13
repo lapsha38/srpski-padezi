@@ -12,7 +12,7 @@ Future<void> main() async {
 }
 
 class SrpskiPadeziApp extends StatelessWidget {
-  const SrpskiPadeziApp({super.key});
+  const new({super.key});
 
   @override
   Widget build(BuildContext context) {

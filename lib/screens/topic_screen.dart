@@ -8,7 +8,7 @@ import 'package:srpski_padezi/widgets/section_card.dart';
 
 /// Теория одной грамматической темы и запуск её тренировок.
 class TopicScreen extends StatelessWidget {
-  const TopicScreen({required this.topic, super.key});
+  const new({required this.topic, super.key});
 
   final GrammarTopic topic;
 
@@ -31,7 +31,7 @@ class TopicScreen extends StatelessWidget {
 }
 
 class _Trainings extends StatelessWidget {
-  const _Trainings({required this.topic});
+  const new({required this.topic});
 
   final GrammarTopic topic;
 
@@ -63,9 +63,8 @@ class _Trainings extends StatelessWidget {
                 onPressed: () => Navigator.push(
                   context,
                   MaterialPageRoute<void>(
-                    builder: (_) => QuizScreen(
-                      session: GrammarQuizPresets.forDrill(drill),
-                    ),
+                    builder: (_) =>
+                        QuizScreen(session: GrammarQuizPresets.forDrill(drill)),
                   ),
                 ),
                 child: const Text('Начать'),

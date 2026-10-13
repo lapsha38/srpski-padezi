@@ -26,7 +26,7 @@ enum Person { firstSg, secondSg, thirdSg, firstPl, secondPl, thirdPl }
 /// Род нужен для прошедшего времени: причастие согласуется с подлежащим
 /// (on je radio - ona je radila).
 class Subject {
-  const Subject(this.pronoun, this.ru, this.person, this.gender);
+  const new(this.pronoun, this.ru, this.person, this.gender);
 
   final String pronoun;
   final String ru;
@@ -100,7 +100,7 @@ const List<String> kNegatedImati = [
 
 /// Глагол со всеми формами, которые нужны приложению.
 class Verb {
-  const Verb({
+  const new({
     required this.infinitive,
     required this.ru,
     required this.conjugation,
@@ -167,14 +167,7 @@ const List<Verb> kVerbs = [
     infinitive: 'govoriti',
     ru: 'говорить',
     conjugation: Conjugation.im,
-    present: [
-      'govorim',
-      'govoriš',
-      'govori',
-      'govorimo',
-      'govorite',
-      'govore',
-    ],
+    present: ['govorim', 'govoriš', 'govori', 'govorimo', 'govorite', 'govore'],
     participle: [
       'govorio',
       'govorila',
@@ -230,14 +223,7 @@ const List<Verb> kVerbs = [
     infinitive: 'gledati',
     ru: 'смотреть',
     conjugation: Conjugation.am,
-    present: [
-      'gledam',
-      'gledaš',
-      'gleda',
-      'gledamo',
-      'gledate',
-      'gledaju',
-    ],
+    present: ['gledam', 'gledaš', 'gleda', 'gledamo', 'gledate', 'gledaju'],
     participle: [
       'gledao',
       'gledala',
@@ -253,28 +239,14 @@ const List<Verb> kVerbs = [
     ru: 'читать',
     conjugation: Conjugation.am,
     present: ['čitam', 'čitaš', 'čita', 'čitamo', 'čitate', 'čitaju'],
-    participle: [
-      'čitao',
-      'čitala',
-      'čitalo',
-      'čitali',
-      'čitale',
-      'čitala',
-    ],
+    participle: ['čitao', 'čitala', 'čitalo', 'čitali', 'čitale', 'čitala'],
     imperative: ['čitaj', 'čitajmo', 'čitajte'],
   ),
   Verb(
     infinitive: 'slušati',
     ru: 'слушать',
     conjugation: Conjugation.am,
-    present: [
-      'slušam',
-      'slušaš',
-      'sluša',
-      'slušamo',
-      'slušate',
-      'slušaju',
-    ],
+    present: ['slušam', 'slušaš', 'sluša', 'slušamo', 'slušate', 'slušaju'],
     participle: [
       'slušao',
       'slušala',
@@ -290,28 +262,14 @@ const List<Verb> kVerbs = [
     ru: 'спрашивать',
     conjugation: Conjugation.am,
     present: ['pitam', 'pitaš', 'pita', 'pitamo', 'pitate', 'pitaju'],
-    participle: [
-      'pitao',
-      'pitala',
-      'pitalo',
-      'pitali',
-      'pitale',
-      'pitala',
-    ],
+    participle: ['pitao', 'pitala', 'pitalo', 'pitali', 'pitale', 'pitala'],
     imperative: ['pitaj', 'pitajmo', 'pitajte'],
   ),
   Verb(
     infinitive: 'spavati',
     ru: 'спать',
     conjugation: Conjugation.am,
-    present: [
-      'spavam',
-      'spavaš',
-      'spava',
-      'spavamo',
-      'spavate',
-      'spavaju',
-    ],
+    present: ['spavam', 'spavaš', 'spava', 'spavamo', 'spavate', 'spavaju'],
     participle: [
       'spavao',
       'spavala',
@@ -344,14 +302,7 @@ const List<Verb> kVerbs = [
     ru: 'писать',
     conjugation: Conjugation.em,
     present: ['pišem', 'pišeš', 'piše', 'pišemo', 'pišete', 'pišu'],
-    participle: [
-      'pisao',
-      'pisala',
-      'pisalo',
-      'pisali',
-      'pisale',
-      'pisala',
-    ],
+    participle: ['pisao', 'pisala', 'pisalo', 'pisali', 'pisale', 'pisala'],
     imperative: ['piši', 'pišimo', 'pišite'],
     note: 'В настоящем времени основа меняется: pisati → pišem.',
   ),
@@ -397,14 +348,7 @@ const List<Verb> kVerbs = [
     infinitive: 'putovati',
     ru: 'путешествовать',
     conjugation: Conjugation.em,
-    present: [
-      'putujem',
-      'putuješ',
-      'putuje',
-      'putujemo',
-      'putujete',
-      'putuju',
-    ],
+    present: ['putujem', 'putuješ', 'putuje', 'putujemo', 'putujete', 'putuju'],
     participle: [
       'putovao',
       'putovala',
@@ -486,14 +430,7 @@ const List<Verb> kVerbs = [
     ru: 'открыть',
     conjugation: Conjugation.im,
     perfective: true,
-    present: [
-      'otvorim',
-      'otvoriš',
-      'otvori',
-      'otvorimo',
-      'otvorite',
-      'otvore',
-    ],
+    present: ['otvorim', 'otvoriš', 'otvori', 'otvorimo', 'otvorite', 'otvore'],
     participle: [
       'otvorio',
       'otvorila',
@@ -578,14 +515,7 @@ const List<Verb> kVerbs = [
     infinitive: 'kupovati',
     ru: 'покупать',
     conjugation: Conjugation.em,
-    present: [
-      'kupujem',
-      'kupuješ',
-      'kupuje',
-      'kupujemo',
-      'kupujete',
-      'kupuju',
-    ],
+    present: ['kupujem', 'kupuješ', 'kupuje', 'kupujemo', 'kupujete', 'kupuju'],
     participle: [
       'kupovao',
       'kupovala',

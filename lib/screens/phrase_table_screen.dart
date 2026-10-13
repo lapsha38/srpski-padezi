@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:srpski_padezi/data/cases.dart';
 import 'package:srpski_padezi/logic/phrase_table.dart';
 import 'package:srpski_padezi/models/models.dart';
 import 'package:srpski_padezi/services/progress_service.dart';
@@ -9,7 +10,7 @@ import 'package:srpski_padezi/widgets/tag_chip.dart';
 /// Одно словосочетание во всех семи падежах: видно, что прилагательное
 /// и существительное меняют окончания по-разному.
 class PhraseTableScreen extends StatefulWidget {
-  const PhraseTableScreen({this.generator, super.key});
+  const new({this.generator, super.key});
 
   /// Источник словосочетаний; по умолчанию - со случайным зерном.
   /// Задаётся в тестах, чтобы проверять вёрстку на конкретных парах слов.
@@ -136,7 +137,7 @@ class _PhraseTableScreenState extends State<PhraseTableScreen> {
 
 /// Шапка: какое словосочетание склоняем.
 class _PhraseCard extends StatelessWidget {
-  const _PhraseCard({required this.table});
+  const new({required this.table});
 
   final PhraseTable table;
 
@@ -178,7 +179,7 @@ class _PhraseCard extends StatelessWidget {
 ///
 /// Не ListTile: длинным формам нужен перенос, а не обрезка.
 class _CaseRow extends StatelessWidget {
-  const _CaseRow({required this.row, required this.given, required this.onTap});
+  const new({required this.row, required this.given, required this.onTap});
 
   final PhraseTableRow row;
   final String? given;
@@ -204,7 +205,7 @@ class _CaseRow extends StatelessWidget {
             CircleAvatar(
               radius: 16,
               child: Text(
-                '${row.gramCase.order}',
+                '${caseLearningStep(row.gramCase)}',
                 style: theme.textTheme.labelLarge,
               ),
             ),
@@ -273,15 +274,34 @@ class _CaseRow extends StatelessWidget {
   }
 }
 
-/// Выбор формы для одного падежа.
-class _OptionsSheet extends StatelessWidget {
-  const _OptionsSheet({required this.row});
+/// Выбор формы для одного падежа: прилагательное и существительное
+/// по отдельности. Лист закрывается, когда выбраны обе части.
+class _OptionsSheet extends StatefulWidget {
+  const new({required this.row});
 
   final PhraseTableRow row;
 
   @override
+  State<_OptionsSheet> createState() => _OptionsSheetState();
+}
+
+class _OptionsSheetState extends State<_OptionsSheet> {
+  final Map<int, String> _choices = {};
+
+  void _choose(int part, String option) {
+    setState(() => _choices[part] = option);
+    final parts = widget.row.parts;
+    if (_choices.length < parts.length) return;
+    Navigator.pop(
+      context,
+      joinParts([for (var i = 0; i < parts.length; i++) _choices[i]!]),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final row = widget.row;
 
     return SafeArea(
       child: SingleChildScrollView(
@@ -296,18 +316,29 @@ class _OptionsSheet extends StatelessWidget {
             ),
             const SizedBox(height: 2),
             Text(row.gramCase.questions, style: theme.textTheme.bodySmall),
-            const SizedBox(height: 12),
-            for (final option in row.options)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton(
-                    onPressed: () => Navigator.pop(context, option),
-                    child: Text(option, textAlign: TextAlign.center),
-                  ),
-                ),
+            for (final (i, part) in row.parts.indexed) ...[
+              const SizedBox(height: 12),
+              Text(part.label, style: theme.textTheme.titleSmall),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  for (final option in part.options)
+                    if (_choices[i] == option)
+                      FilledButton.tonal(
+                        onPressed: () => _choose(i, option),
+                        child: Text(option),
+                      )
+                    else
+                      OutlinedButton(
+                        onPressed: () => _choose(i, option),
+                        child: Text(option),
+                      ),
+                ],
               ),
+            ],
+            const SizedBox(height: 4),
             Align(
               alignment: Alignment.centerLeft,
               child: TextButton.icon(
@@ -326,7 +357,7 @@ class _OptionsSheet extends StatelessWidget {
 
 /// Итог таблицы.
 class _SummaryCard extends StatelessWidget {
-  const _SummaryCard({
+  const new({
     required this.correct,
     required this.total,
     required this.onRestart,

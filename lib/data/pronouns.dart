@@ -5,7 +5,7 @@ import 'package:srpski_padezi/models/models.dart';
 /// Краткие формы безударны и стоят на втором месте в предложении; полные
 /// употребляются под логическим ударением и после предлогов.
 class PersonalPronoun {
-  const PersonalPronoun({
+  const new({
     required this.nominative,
     required this.ru,
     required this.genitiveFull,
@@ -143,7 +143,7 @@ const List<PersonalPronoun> kPronouns = [
 
 /// Притяжательные местоимения - склоняются как прилагательные.
 class PossessivePronoun {
-  const PossessivePronoun(this.masculine, this.feminine, this.neuter, this.ru);
+  const new(this.masculine, this.feminine, this.neuter, this.ru);
 
   final String masculine;
   final String feminine;

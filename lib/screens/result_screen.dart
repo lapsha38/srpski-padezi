@@ -9,7 +9,7 @@ import 'package:srpski_padezi/theme.dart';
 
 /// Итоги тренировки с разбором ошибок.
 class ResultScreen extends StatelessWidget {
-  const ResultScreen({required this.answers, required this.session, super.key});
+  const new({required this.answers, required this.session, super.key});
 
   final List<AnswerRecord> answers;
   final QuizSession session;
@@ -159,7 +159,7 @@ void _startNext(BuildContext context, NextStep step) {
 }
 
 class _MistakeCard extends StatelessWidget {
-  const _MistakeCard({required this.record});
+  const new({required this.record});
 
   final AnswerRecord record;
 

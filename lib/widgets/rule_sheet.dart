@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:srpski_padezi/data/adjectives.dart';
 import 'package:srpski_padezi/data/cases.dart';
 import 'package:srpski_padezi/models/models.dart';
+import 'package:srpski_padezi/widgets/section_card.dart';
 import 'package:srpski_padezi/widgets/selectable_on_web.dart';
 
 /// Показывает правило, по которому строится ответ, не прерывая тренировку.
@@ -22,7 +23,7 @@ Future<void> showRuleSheet(BuildContext context, RuleRef rule) {
 }
 
 class _RuleContent extends StatelessWidget {
-  const _RuleContent({required this.rule, required this.controller});
+  const new({required this.rule, required this.controller});
 
   final RuleRef rule;
   final ScrollController controller;
@@ -71,12 +72,17 @@ class _RuleContent extends StatelessWidget {
             ),
           _Block(
             title: 'Окончания существительных',
-            children: [_EndingsList(rows: info.endings)],
+            children: [
+              EndingsTable(rows: info.endings, gramCase: info.gramCase),
+            ],
           ),
           _Block(
             title: 'Окончания прилагательных',
             children: [
-              _EndingsList(rows: adjectiveEndingRows(info.gramCase)),
+              EndingsTable(
+                rows: adjectiveEndingRows(info.gramCase),
+                gramCase: info.gramCase,
+              ),
             ],
           ),
           _Block(
@@ -96,7 +102,7 @@ class _RuleContent extends StatelessWidget {
 }
 
 class _Block extends StatelessWidget {
-  const _Block({required this.title, required this.children});
+  const new({required this.title, required this.children});
 
   final String title;
   final List<Widget> children;
@@ -118,7 +124,7 @@ class _Block extends StatelessWidget {
 }
 
 class _Bullet extends StatelessWidget {
-  const _Bullet(this.text);
+  const new(this.text);
 
   final String text;
 
@@ -135,44 +141,6 @@ class _Bullet extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-/// Компактный список окончаний: тип склонения, единственное и множественное.
-class _EndingsList extends StatelessWidget {
-  const _EndingsList({required this.rows});
-
-  final List<EndingRow> rows;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        for (final row in rows)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '${row.group}: ед. ч. ${row.singular} · мн. ч. ${row.plural}',
-                  style: theme.textTheme.bodyMedium,
-                ),
-                if (row.example != null)
-                  Text(
-                    row.example!,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      fontStyle: FontStyle.italic,
-                    ),
-                  ),
-              ],
-            ),
-          ),
-      ],
     );
   }
 }

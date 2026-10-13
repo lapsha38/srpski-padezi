@@ -11,7 +11,7 @@ import 'package:srpski_padezi/models/models.dart';
 /// и числительные учитываются одинаково. Отметка о прохождении ничего
 /// не запирает: все разделы доступны сразу.
 class ProgressService extends ChangeNotifier {
-  ProgressService._();
+  new _();
 
   static final ProgressService instance = ProgressService._();
 

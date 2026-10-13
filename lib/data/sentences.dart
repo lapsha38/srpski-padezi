@@ -6,7 +6,7 @@ import 'package:srpski_padezi/models/models.dart';
 /// [gramCase] и [number], поэтому таблицы склонения и предложения
 /// не могут разойтись.
 class SentenceTask {
-  const SentenceTask({
+  const new({
     required this.lemma,
     required this.gramCase,
     required this.number,

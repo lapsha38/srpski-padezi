@@ -2,7 +2,7 @@ import 'package:srpski_padezi/models/models.dart';
 
 /// Количественное числительное и его порядковая пара.
 class Numeral {
-  const Numeral(this.value, this.cardinal, this.ordinal, {this.collective});
+  const new(this.value, this.cardinal, this.ordinal, {this.collective});
 
   final int value;
 

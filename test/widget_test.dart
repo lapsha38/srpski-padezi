@@ -8,6 +8,7 @@ import 'package:srpski_padezi/logic/quiz_engine.dart';
 import 'package:srpski_padezi/main.dart';
 import 'package:srpski_padezi/models/models.dart';
 import 'package:srpski_padezi/screens/phrase_table_screen.dart';
+import 'package:srpski_padezi/screens/quiz_screen.dart';
 import 'package:srpski_padezi/screens/result_screen.dart';
 import 'package:srpski_padezi/services/progress_service.dart';
 import 'package:srpski_padezi/services/theme_service.dart';
@@ -242,7 +243,12 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Правило'), findsOneWidget);
 
+      // Форма собирается из двух выборов: прилагательное, затем
+      // существительное. После первого лист ещё открыт.
       await tester.tap(find.byType(OutlinedButton).first);
+      await tester.pumpAndSettle();
+      expect(find.textContaining('Заполнено 0 из 7'), findsOneWidget);
+      await tester.tap(find.byType(OutlinedButton).last);
       await tester.pumpAndSettle();
 
       expect(find.textContaining('Заполнено 1 из 7'), findsOneWidget);
@@ -272,14 +278,14 @@ void main() {
         await tester.pumpAndSettle();
         await tester.tap(find.byType(OutlinedButton).first);
         await tester.pumpAndSettle();
+        await tester.tap(find.byType(OutlinedButton).last);
+        await tester.pumpAndSettle();
 
         expect(find.textContaining('Заполнено 1 из 7'), findsOneWidget);
       }
     });
 
-    testWidgets('на вебе всё приложение выделяется без ошибок', (
-      tester,
-    ) async {
+    testWidgets('на вебе всё приложение выделяется без ошибок', (tester) async {
       // SelectionArea требует предка Overlay. Если поставить её выше
       // навигатора, приложение падает - но только на вебе, поэтому веб-ветку
       // включаем принудительно и проходим по экранам.
@@ -332,9 +338,8 @@ void main() {
       await tester.pumpWidget(const SrpskiPadeziApp());
       await tester.pumpAndSettle();
 
-      Brightness brightness() => Theme.of(
-        tester.element(find.text('Srpski Padeži')),
-      ).brightness;
+      Brightness brightness() =>
+          Theme.of(tester.element(find.text('Srpski Padeži'))).brightness;
 
       expect(brightness(), Brightness.light);
       expect(find.byIcon(Icons.dark_mode_outlined), findsOneWidget);
@@ -447,6 +452,40 @@ void main() {
       );
       expect(find.textContaining('Дальше:'), findsNothing);
       expect(find.text('Следующий падеж: Akuzativ'), findsOneWidget);
+    });
+
+    testWidgets('словосочетание собирается из прилагательного и '
+        'существительного', (tester) async {
+      final question = QuizGenerator(Random(1))
+          .generate(
+            const QuizConfig(
+              cases: [GramCase.lokativ],
+              numberMode: NumberMode.singular,
+              practiceMode: PracticeMode.phrases,
+              questionCount: 1,
+            ),
+          )
+          .single;
+      final session = QuizSession(title: 'Тест', build: () => [question]);
+      // Обе части и пояснение должны поместиться без прокрутки.
+      tester.view.physicalSize = const Size(800, 1600);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(MaterialApp(home: QuizScreen(session: session)));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Прилагательное'), findsOneWidget);
+      expect(find.text('Существительное'), findsOneWidget);
+
+      final [adjective, noun] = question.parts;
+      await tester.tap(find.text(adjective.answer));
+      await tester.pumpAndSettle();
+      // Пока выбрана одна часть, ответ не засчитан.
+      expect(find.text('Верно!'), findsNothing);
+
+      await tester.tap(find.text(noun.answer));
+      await tester.pumpAndSettle();
+      expect(find.text('Верно!'), findsOneWidget);
     });
   });
 }

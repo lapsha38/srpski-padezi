@@ -9,7 +9,7 @@ import 'package:srpski_padezi/widgets/tag_chip.dart';
 
 /// Экран тренировки: вопрос и четыре варианта ответа.
 class QuizScreen extends StatefulWidget {
-  const QuizScreen({required this.session, super.key});
+  const new({required this.session, super.key});
 
   final QuizSession session;
 
@@ -23,6 +23,9 @@ class _QuizScreenState extends State<QuizScreen> {
 
   int _index = 0;
   String? _selected;
+
+  /// Выбор в каждой части составного ответа, пока выбраны не все.
+  final Map<int, String> _partChoices = {};
 
   @override
   void initState() {
@@ -45,11 +48,24 @@ class _QuizScreenState extends State<QuizScreen> {
     );
   }
 
+  /// Ответ засчитывается, когда выбраны все части; до этого выбор
+  /// в части можно поменять.
+  void _selectPart(int part, String option) {
+    if (_answered) return;
+    setState(() => _partChoices[part] = option);
+    final parts = _question.parts;
+    if (_partChoices.length < parts.length) return;
+    _select(
+      joinParts([for (var i = 0; i < parts.length; i++) _partChoices[i]!]),
+    );
+  }
+
   Future<void> _next() async {
     if (_index + 1 < _questions.length) {
       setState(() {
         _index++;
         _selected = null;
+        _partChoices.clear();
       });
       return;
     }
@@ -120,6 +136,21 @@ class _QuizScreenState extends State<QuizScreen> {
                       ),
                     ),
                   const SizedBox(height: 8),
+                  for (final (i, part) in _question.parts.indexed) ...[
+                    Text(part.label, style: theme.textTheme.titleSmall),
+                    const SizedBox(height: 8),
+                    _OptionGrid(
+                      children: [
+                        for (final option in part.options)
+                          _OptionButton(
+                            label: option,
+                            state: _partStateFor(i, part, option),
+                            onTap: () => _selectPart(i, option),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                  ],
                   for (final option in _question.options)
                     Padding(
                       padding: const EdgeInsets.only(bottom: 10),
@@ -167,11 +198,50 @@ class _QuizScreenState extends State<QuizScreen> {
     if (option == _selected) return _OptionState.wrong;
     return _OptionState.idle;
   }
+
+  _OptionState _partStateFor(int i, AnswerPart part, String option) {
+    final chosen = _partChoices[i] == option;
+    if (!_answered) return chosen ? _OptionState.chosen : _OptionState.idle;
+    if (option == part.answer) return _OptionState.correct;
+    if (chosen) return _OptionState.wrong;
+    return _OptionState.idle;
+  }
+}
+
+/// Варианты одной части ответа в две колонки: формы короткие, а частей
+/// несколько - в столбик задание не помещается на экран.
+class _OptionGrid extends StatelessWidget {
+  const new({required this.children});
+
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        for (var i = 0; i < children.length; i += 2)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: Row(
+              children: [
+                Expanded(child: children[i]),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: i + 1 < children.length
+                      ? children[i + 1]
+                      : const SizedBox.shrink(),
+                ),
+              ],
+            ),
+          ),
+      ],
+    );
+  }
 }
 
 /// Формулировка задания: предложение с пропуском или прямое указание темы.
 class _QuestionCard extends StatelessWidget {
-  const _QuestionCard({required this.question, required this.revealed});
+  const new({required this.question, required this.revealed});
 
   final Question question;
   final bool revealed;
@@ -190,9 +260,7 @@ class _QuestionCard extends StatelessWidget {
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
-                children: [
-                  for (final tag in question.tags) TagChip(tag),
-                ],
+                children: [for (final tag in question.tags) TagChip(tag)],
               ),
               const SizedBox(height: 12),
             ],
@@ -226,15 +294,11 @@ class _QuestionCard extends StatelessWidget {
   }
 }
 
-enum _OptionState { idle, correct, wrong }
+enum _OptionState { idle, chosen, correct, wrong }
 
 /// Кнопка варианта ответа с подсветкой после ответа.
 class _OptionButton extends StatelessWidget {
-  const _OptionButton({
-    required this.label,
-    required this.state,
-    required this.onTap,
-  });
+  const new({required this.label, required this.state, required this.onTap});
 
   final String label;
   final _OptionState state;
@@ -249,7 +313,7 @@ class _OptionButton extends StatelessWidget {
       Color? foreground,
       IconData? icon,
     ) = switch (state) {
-      _OptionState.idle => (null, null, null),
+      _OptionState.idle || _OptionState.chosen => (null, null, null),
       _OptionState.correct => (
         Colors.green.shade600,
         Colors.white,
@@ -262,15 +326,15 @@ class _OptionButton extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Flexible(child: Text(label, textAlign: TextAlign.center)),
-        if (icon != null) ...[
-          const SizedBox(width: 8),
-          Icon(icon, size: 20),
-        ],
+        if (icon != null) ...[const SizedBox(width: 8), Icon(icon, size: 20)],
       ],
     );
 
     if (state == _OptionState.idle) {
       return OutlinedButton(onPressed: onTap, child: child);
+    }
+    if (state == _OptionState.chosen) {
+      return FilledButton.tonal(onPressed: onTap, child: child);
     }
     return FilledButton(
       style: FilledButton.styleFrom(
@@ -285,7 +349,7 @@ class _OptionButton extends StatelessWidget {
 
 /// Пояснение после ответа.
 class _FeedbackCard extends StatelessWidget {
-  const _FeedbackCard({required this.question, required this.correct});
+  const new({required this.question, required this.correct});
 
   final Question question;
   final bool correct;
